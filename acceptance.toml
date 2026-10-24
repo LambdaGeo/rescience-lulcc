@@ -1,0 +1,46 @@
+# Acceptance criteria for the replication, written before any ensemble
+# result was seen (neither lulcc's nor ours). The git commit that adds this
+# file precedes the commits with results.
+#
+# Two levels:
+#   deterministic  same inputs as the golden; the allocation must be identical
+#   ensemble       our own randomness (partition, jitter, stochastic ordered
+#                  allocation) against lulcc's, 30 seeds each; distributions
+#                  must agree
+
+[deterministic]
+crosstab = "identical"
+demand = "identical"
+glm_max_rel_diff = 1e-6           # same training cells; different optimiser
+probability_max_abs_diff = 1e-8
+clues_cells_differing = 0         # every step, from the golden's probabilities and demand
+ordered_cells_differing = 0
+threemap_tables_max_abs_diff = 1e-12
+fom_max_abs_diff = 1e-12
+
+[ensemble]
+seeds = 30                        # lulcc: seeds 1..30 (R); replication: seeds 1..30 (NumPy)
+# Metrics compared (one value per seed and metric):
+#   auc_glm_<class>               Fig. 5, glm, test partition of 1985
+#   auc_builtgain                 Fig. 6, glm, gain of built 1985-1991
+#   fom_forest_built_<model>_<f>  Figs. 7-8, figure of merit forest -> built at t14,
+#                                 model in {clues, ordered}, factor f in 2..256
+metrics = ["auc_glm", "auc_builtgain", "fom_forest_built"]
+
+# A metric passes when BOTH hold:
+#  1. means agree:  |mean_py - mean_R| <= max(3 * se_diff, abs_floor)
+#     with se_diff = sqrt(sd_R^2 / n_R + sd_py^2 / n_py)
+#     abs_floor protects metrics whose spread is ~0 in both ensembles
+#  2. distributions agree: two-sample Kolmogorov-Smirnov p-value >= ks_alpha
+abs_floor = 1e-6
+ks_alpha = 0.01
+
+# The replication is accepted when every metric passes. Failing metrics are
+# reported, not removed, and are discussed in the article.
+
+# Not part of acceptance (reported descriptively):
+#  - rpart and random forest AUCs of Fig. 5: R's rpart and randomForest are
+#    not reimplemented; scikit-learn models would differ by construction.
+#  - run times.
+#  - the single values printed in the paper (one unseeded run): we report
+#    where they fall in lulcc's own ensemble.
