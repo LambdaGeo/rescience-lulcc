@@ -24,11 +24,14 @@ regression, demand from interpolation between observed maps, spatial allocation 
 CLUE-S \supercite{Verburg:2002} and by an ordered procedure \supercite{Fuchs:2013},
 and pattern validation by three-map comparison \supercite{Pontius:2011}.
 
-We replicate that application in Python. Both lulcc and the CLUE-S implementation we
-use were written from the published description of the algorithm
-\supercite{Verburg:2002}, independently of each other; the comparison therefore tests
-two independent readings of the same description, with lulcc's own demonstration as
-the reference.
+We replicate that application in Python: a replication in the sense of
+\citet{NASEM:2019}, with new code and our own runs, rather than a reproduction with the
+original code. Both lulcc and the CLUE-S implementation we use were written from the
+published description of the algorithm \supercite{Verburg:2002}, independently of each
+other. Allocation procedures are known to leave room for different readings, with
+consequences for the simulated maps \supercite{Mazy:2023}; the comparison therefore
+tests two independent readings of the same description, with lulcc's own demonstration
+as the reference.
 
 \section{Replication summary}
 
@@ -37,8 +40,9 @@ spatially explicit dynamic models, and its land use package DisSLUCC
 \supercite{DisSLUCC:2026}. The code is original. Its parts have three origins:
 \begin{itemize}
   \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged. It was
-    ported from LuccME, the land use extension of TerraME \supercite{Carneiro:2013}
-    developed at INPE, and not from lulcc.
+    ported from LuccME \supercite{Aguiar:2012}, the land use extension of TerraME
+    \supercite{Carneiro:2013} developed at INPE, and not from lulcc; DisSLUCC is
+    verified against LuccME separately \supercite{DisSLUCCbenchmark:2026}.
   \item \emph{Written for this replication from the original article}: data reading,
     suitability, demand, the random perturbation of CLUE-S, the ordered allocation, and
     the three-map comparison with its agreement budget and figure of merit.
@@ -52,6 +56,10 @@ independent random numbers, 30 runs of each implementation agree in distribution
 20 metrics compared, under criteria recorded before the runs. Running the original
 demonstration script required one repair, unrelated to the model
 (Section~\ref{sec:obstacles}).
+
+\guia{Confirm that the DisSLUCC benchmark covers the discrete CLUE-S
+(AllocationDClueSLike); if it covers only the continuous allocation, rephrase the
+sentence on verification against LuccME.}
 
 \guia{Check with the editor whether the author's past work at INPE on TerraME/LuccME
 (doctorate) needs to be declared. It is not a collaboration with the original
