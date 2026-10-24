@@ -3,12 +3,21 @@
 
 title: "[Re] An open and extensible framework for spatially explicit land use change modelling: the lulcc R package"
 
-# GUIA: add co-authors here if any (name, orcid, email, affiliations).
 authors:
   - name: Sérgio Souza Costa
     orcid: 0000-0002-0232-4549
     email: sergio.costa@ufma.br
     affiliations: 1,*
+
+  - name: Denilson da Silva Bezerra
+    orcid: 0000-0002-9567-7828
+    email:
+    affiliations: 1
+
+  - name: José Magno Pinheiro Alves
+    orcid: 0009-0003-7212-4870
+    email:
+    affiliations: 1
 
 affiliations:
   - code:    1

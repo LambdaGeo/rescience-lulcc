@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this repository, please cite it and the original article."
+title: "[Re] An open and extensible framework for spatially explicit land use change modelling: the lulcc R package"
+type: software
+authors:
+  - family-names: Costa
+    given-names: Sérgio Souza
+    affiliation: Universidade Federal do Maranhão (UFMA)
+    orcid: "https://orcid.org/0000-0002-0232-4549"
+  - family-names: Bezerra
+    given-names: Denilson da Silva
+    affiliation: Universidade Federal do Maranhão (UFMA)
+    orcid: "https://orcid.org/0000-0002-9567-7828"
+  - family-names: Alves
+    given-names: José Magno Pinheiro
+    affiliation: Universidade Federal do Maranhão (UFMA)
+    orcid: "https://orcid.org/0009-0003-7212-4870"
+license: MIT
+version: 0.1.0-dev
+repository-code: "https://github.com/LambdaGeo/rescience-lulcc"
+keywords:
+  - replication
+  - ReScience C
+  - land use change
+  - CLUE-S
+  - DisSModel
+references:
+  - type: article
+    title: "An open and extensible framework for spatially explicit land use change modelling: the lulcc R package"
+    authors:
+      - family-names: Moulds
+        given-names: Simon
+      - family-names: Buytaert
+        given-names: Wouter
+      - family-names: Mijic
+        given-names: Ana
+    journal: "Geoscientific Model Development"
+    volume: 8
+    start: 3215
+    end: 3229
+    year: 2015
+    doi: "10.5194/gmd-8-3215-2015"

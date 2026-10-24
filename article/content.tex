@@ -61,7 +61,7 @@ demonstration script required one repair, unrelated to the model
 (AllocationDClueSLike); if it covers only the continuous allocation, rephrase the
 sentence on verification against LuccME.}
 
-\guia{Check with the editor whether the author's past work at INPE on TerraME/LuccME
+\guia{Check with the editor whether the first author's past work at INPE on TerraME/LuccME
 (doctorate) needs to be declared. It is not a collaboration with the original
 authors, which is what the journal's rule excludes.}
 
@@ -367,16 +367,22 @@ scripts that generate the reference outputs, the replication code and its tests,
 the comparison scripts; drafted the acceptance criteria; ran the smoke-test reference,
 the deterministic comparison and both ensembles in a cloud workspace; found the cause of
 the CRS error described in Section~\ref{sec:obstacles}; and drafted and typeset this
-article. The decisions were the author's: replicating this article, generating the
+article. The decisions were the first author's: replicating this article, generating the
 reference in a separate archive, using DisSLUCC unchanged and keeping the missing
 pieces in the replication's repository, comparing at a deterministic and an ensemble
 level, and keeping 30 runs. The CLUE-S implementation used, DisSLUCC, predates this
-work. The author reviewed the code and the text, reran the comparison on his own
-computer and is responsible for all the content. The tool is not listed as an author.
+work. The authors reviewed the code and the text, reran the comparison on their own
+computers and are responsible for all the content. The tool is not listed as an author.
 Commits made with it carry a Co-Authored-By line naming the model.
 
+\guia{Co-authors (Denilson da Silva Bezerra, José Magno Pinheiro Alves): state what
+each did, e.g. an independent run of the reference and the replication on another
+machine (as in the Open LUCC workflow), review of the text. If someone does such a run,
+report it in Section~\ref{sec:setup}: a second machine strengthens the replication.
+Fill their e-mails in metadata.yaml.}
+
 \guia{Check every claim of this statement before submission. In particular: (1) the
-sentence ``reran the comparison on his own computer'' is true only after the Docker
+sentence ``reran the comparison on their own computers'' is true only after the Docker
 goldens and the registered run are made on your machine; until then the runs exist
 only in the AI's cloud workspace. (2) Add the dates of the later work. (3) Decide
 whether the acceptance criteria count as drafted by the model and approved by you (as
