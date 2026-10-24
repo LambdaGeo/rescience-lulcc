@@ -2,13 +2,16 @@
 % Two versions are built from this file (see Makefile):
 %   article.pdf       clean: no GUIA blocks, appendix replaced by a pointer
 %   article-full.pdf  full:  GUIA blocks (notes to the author) and appendix
+% Structure follows published ReScience C replications: replication summary
+% first, then analysis of the original paper, set-up, implementation, results.
 % ---------------------------------------------------------------------------
 
-\guia{Draft v1, 24 Oct 2026. All numbers come from the smoke-test environment
+\guia{Draft v2, 24 Oct 2026. All numbers come from the smoke-test environment
 (R 4.3.3, raster 3.6-26, lulcc 1.0.4 built from source on Ubuntu 24.04), not yet
 from the Docker image of lulcc-goldens. Regenerate the goldens in Docker, rerun
-\texttt{make check} and \texttt{make compare}, and update every number marked in
-Tables~\ref{tab:deterministic} and \ref{tab:ensemble}, the abstract and the text.}
+\texttt{make check} and \texttt{make compare}, and update every number in
+Section~\ref{sec:setup}, Tables~\ref{tab:deterministic} and \ref{tab:ensemble}, the
+abstract and the text.}
 
 \section{Introduction}
 
@@ -21,15 +24,34 @@ regression, demand from interpolation between observed maps, spatial allocation 
 CLUE-S \supercite{Verburg:2002} and by an ordered procedure \supercite{Fuchs:2013},
 and pattern validation by three-map comparison \supercite{Pontius:2011}.
 
-We replicate that application with a different implementation in a different
-language. The replication runs on DisSModel \supercite{DisSModel:2026}, a Python
-framework for spatially explicit dynamic models, and its land use package DisSLUCC
-\supercite{DisSLUCC:2026}. The CLUE-S allocation of DisSLUCC was ported from LuccME,
-the land use extension of TerraME \supercite{Carneiro:2013} developed at INPE, and was
-written independently of lulcc; both lulcc and LuccME implement the algorithm from its
-published description \supercite{Verburg:2002}. The comparison therefore tests two
-independent readings of the same description, and lulcc's own demonstration, which
-was written to be reproducible, provides the reference.
+We replicate that application in Python. Both lulcc and the CLUE-S implementation we
+use were written from the published description of the algorithm
+\supercite{Verburg:2002}, independently of each other; the comparison therefore tests
+two independent readings of the same description, with lulcc's own demonstration as
+the reference.
+
+\section{Replication summary}
+
+The replication runs on DisSModel \supercite{DisSModel:2026}, a Python framework for
+spatially explicit dynamic models, and its land use package DisSLUCC
+\supercite{DisSLUCC:2026}. The code is original. Its parts have three origins:
+\begin{itemize}
+  \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged. It was
+    ported from LuccME, the land use extension of TerraME \supercite{Carneiro:2013}
+    developed at INPE, and not from lulcc.
+  \item \emph{Written for this replication from the original article}: data reading,
+    suitability, demand, the random perturbation of CLUE-S, the ordered allocation, and
+    the three-map comparison with its agreement budget and figure of merit.
+  \item \emph{Conventions taken from lulcc's source code}: where the article leaves a
+    choice open, we read the source and followed it (Section~\ref{sec:analysis}). No
+    lulcc code was translated or reused.
+\end{itemize}
+Given the same inputs, our CLUE-S and ordered allocations reproduce every simulated
+map of lulcc cell by cell, and our validation tables agree to $10^{-16}$. With
+independent random numbers, 30 runs of each implementation agree in distribution on all
+20 metrics compared, under criteria recorded before the runs. Running the original
+demonstration script required one repair, unrelated to the model
+(Section~\ref{sec:obstacles}).
 
 \guia{Check with the editor whether the author's past work at INPE on TerraME/LuccME
 (doctorate) needs to be declared. It is not a collaboration with the original
@@ -74,69 +96,114 @@ $2 \times 2$ to $256 \times 256$ cells, through the three-dimensional contingenc
 of \citet{Pontius:2011}. The paper reports the agreement budget and the figure of merit
 of the forest-to-built transition for both allocation methods (its Figs.~7 and 8).
 
-\section{Methods}
+\section{Analysis of the original paper}
+\label{sec:analysis}
 
-\subsection{Reference}
+The article states the model, its parameters and the code that produced its figures,
+which the package ships as a demonstration script (\texttt{demo/gmd-paper.R}). Four
+aspects are nonetheless not determined by the text.
 
-The paper sets no random seed, and three of its steps draw random numbers: the
-training sample, the CLUE-S perturbation and the ordered allocation. The numbers it
-prints are one draw from a distribution and cannot be repeated exactly, not even with
-lulcc. We therefore generated the reference ourselves by running the paper's
-demonstration script (\texttt{demo/gmd-paper.R}) with lulcc 1.0.4
-\supercite{lulcc:2019} in a fixed environment, and archived the outputs
-\supercite{lulccgoldens:2026}. Two kinds of reference were produced:
-\begin{itemize}
-  \item a \emph{deterministic} one, with the randomness removed (seed 1 for the
-    training sample, \texttt{jitter.f} $= 0$, ordered allocation not stochastic),
-    exported stage by stage: training cells, regression coefficients, the suitability
-    matrix, the demand table, all simulated maps and the three-map tables;
-  \item an \emph{ensemble} of 30 runs of the script as published, seeds 1 to 30.
-\end{itemize}
+\paragraph{Random numbers without a seed.} Three steps draw random numbers: the training
+sample, the CLUE-S perturbation and the stochastic ordered allocation. The script sets
+no seed, so the numbers printed in the paper are one draw from a distribution and
+cannot be repeated exactly, not even with lulcc. This is why we generated the
+reference ourselves and compare at two levels (Section~\ref{sec:comparison}).
 
-\guia{Add the Zenodo DOI of lulcc-goldens and the Docker image digest once released.}
-
-\subsection{Implementation}
-
-The replication reads the data set from GeoTIFF files exported from the R package and
-uses no R code. Suitability is fitted with statsmodels; the AUC is computed by the
-Mann--Whitney statistic, with ties counted as one half. CLUE-S is the
-allocation component of DisSLUCC version 0.5.0 (\texttt{AllocationDClue\-SLike}), used unchanged, on a DisSModel raster
-backend; the environment starts at time 1, as lulcc does. Three pieces that DisSLUCC
-lacks were written for this replication: the random perturbation of CLUE-S (a subclass
-of the DisSLUCC component), the ordered allocation, and the three-map comparison with
-its agreement budget and figure of merit.
-
-The paper describes these last pieces at the level of the algorithm. Where it leaves a
-choice open we read lulcc's source code and followed it, so that differences in the
-comparison would point at the algorithm rather than at a convention. The points
-resolved this way are:
+\paragraph{Choices left to the code.} The text describes the following steps at the
+level of the algorithm. We followed lulcc's source code for them, so that a difference
+in the comparison would point at the algorithm rather than at a convention:
 \begin{itemize}
   \item demand rounding: rows rescaled to the number of cells, floored, and the
     remaining cells given to the classes with the largest remainders;
   \item training sample: the class codes are numeric, so the stratification of
-    \texttt{caret::}\allowbreak\texttt{createDataPartition}, which lulcc calls, groups them by quantile,
-    which for this map gives two strata, \{forest, built\} and \{other\};
+    \texttt{caret::}\allowbreak\texttt{createDataPartition}, which lulcc calls, groups
+    them by quantile, which for this map gives two strata, \{forest, built\} and
+    \{other\};
   \item ordered allocation: which cells are candidates, the temporary class for
     released cells, the limit of 1000 random draws, and ties kept in cell order;
   \item three-map comparison: the layout of the table, aggregation blocks anchored at
     the upper-left corner with incomplete edge blocks weighted by their number of
     valid cells, and empty denominators left out of the sums.
 \end{itemize}
-The CLUE-S allocation itself was not modified to match lulcc.
+The CLUE-S allocation of DisSLUCC was not modified to match lulcc.
 
-\subsection{Comparison and acceptance criteria}
+\paragraph{Behaviours visible only in the code.} The random forest models receive a
+numeric 0/1 response and therefore run in regression mode. The CLUE-S loop has a second
+stopping condition based on the mean signed difference between demand and allocation;
+because the rounded demand sums to the number of cells, that mean is zero, and only the
+largest difference stops the iteration.
 
-Criteria were recorded in the code repository before either ensemble was run (the
-commit precedes those with results). At the deterministic level, fed with the
-reference's own inputs, each stage must agree within numerical precision and the
-allocated maps must be identical. At the ensemble level, our 30 runs (seeds 1 to 30 of
-NumPy's default generator) are compared with lulcc's 30 on 20 metrics: the AUC of the
-glm for each class and for the gain of built, and the figure of merit of forest to
-built for each allocation method at each of the eight resolutions. A metric passes if
-the means differ by at most three standard errors of the difference and a two-sample
-Kolmogorov--Smirnov test gives $p \geq 0.01$. The regression trees and random forests
-of the paper's Fig.~5 are outside the criteria: we did not reimplement R's rpart and
-randomForest, and other implementations would differ by construction.
+\paragraph{Results shown only as figures.} The AUCs are printed in the figures, but the
+agreement budgets and figures of merit are only drawn (Figs.~7--8). We compare the
+latter with our own runs of lulcc, not with the published curves.
+
+\section{Computational set-up}
+\label{sec:setup}
+
+\paragraph{Data.} The replication reads the Plum Island Ecosystems data set from GeoTIFF
+files exported from the R package (\texttt{data(pie)}), without any other change; the
+exported layers carry the original CRS (NAD83, Massachusetts Mainland, EPSG:26986).
+
+\paragraph{Reference.} We ran the demonstration script with lulcc 1.0.4
+\supercite{lulcc:2019} and archived the outputs \supercite{lulccgoldens:2026}. Two
+references were produced:
+\begin{itemize}
+  \item a \emph{deterministic} one, with the randomness removed (seed 1 for the
+    training sample, \texttt{jitter.f} $= 0$, ordered allocation not stochastic),
+    exported stage by stage: training cells, regression coefficients, the suitability
+    matrix, the demand table, all simulated maps and the three-map tables, with doubles
+    written to 17 significant digits;
+  \item an \emph{ensemble} of 30 runs of the script as published, seeds 1 to 30.
+\end{itemize}
+The only change to the script is the repair described in
+Section~\ref{sec:obstacles}.
+
+\paragraph{Software.} Reference: R 4.3.3, lulcc 1.0.4, raster 3.6-26, caret 6.0-94,
+ROCR 1.0-11, randomForest 4.7-1.1. Replication: Python 3.13, DisSModel 0.6.6, DisSLUCC
+0.5.0, NumPy 2.5, SciPy 1.18, statsmodels 0.15, rasterio 1.5.
+
+\paragraph{Hardware and time.} Both were run on one Linux machine with two cores of an
+Intel Xeon at 2.1\,GHz and 7\,GB of memory, partly at the same time. One run of CLUE-S
+over the 14 steps took on average 12\,s in lulcc (whose inner loop is in C) and 30\,s in
+the replication; the ordered allocation took 3\,s and 0.2\,s. One complete run of the
+paper's experiment, including the regression trees and random forests of lulcc, took
+about 90\,s in R; one run of the replication, about 30\,s.
+
+\guia{Add the Zenodo DOI of lulcc-goldens and the Docker image digest once released;
+update software versions and times from the Docker run (measure without concurrent
+jobs).}
+
+\section{Implementation}
+
+Suitability is fitted with statsmodels (binomial GLM). The AUC is computed by the
+Mann--Whitney statistic, with ties counted as one half. CLUE-S is the allocation
+component of DisSLUCC (\texttt{AllocationDClue\-SLike}) on a DisSModel raster backend;
+the simulation starts at time 1, as lulcc does, and the suitability with elasticity is
+supplied to it in double precision. The random perturbation is added by a subclass of
+the DisSLUCC component that draws a new uniform number for every cell and class at
+every iteration. The ordered allocation and the three-map comparison are separate
+modules, operating on the valid cells in the raster's row-major order, which is also
+lulcc's cell order.
+
+\section{Comparison and acceptance criteria}
+\label{sec:comparison}
+
+Criteria were recorded in the code repository before either ensemble was run; the
+commit that adds them precedes those with results.
+
+\paragraph{Deterministic level.} Each stage is fed with the reference's own inputs, so
+that a difference points at that stage only. Coefficients and suitability must agree
+within numerical precision; demand, allocated maps and validation tables must be
+identical or agree to rounding error.
+
+\paragraph{Ensemble level.} Our 30 runs (seeds 1 to 30 of NumPy's default generator) are
+compared with lulcc's 30 on 20 metrics: the AUC of the glm for each class and for the
+gain of built, and the figure of merit of forest to built for each allocation method at
+each of the eight resolutions. A metric passes if the means differ by at most three
+standard errors of the difference and a two-sample Kolmogorov--Smirnov test gives
+$p \geq 0.01$. The regression trees and random forests of the paper's Fig.~5 are
+outside the criteria: we did not reimplement R's rpart and randomForest, and other
+implementations would differ by construction.
 
 \section{Results}
 
@@ -213,6 +280,8 @@ replication.}
 \label{fig:fom}
 \end{figure}
 
+\subsection{The published values}
+
 The values printed in the paper fall inside lulcc's own spread with one exception. In
 our 30 runs of lulcc, the paper's AUC for built (0.9384) is at the 70th percentile,
 that for the gain of built (0.6448) at the 63rd and that for other (0.7276) at the
@@ -220,10 +289,11 @@ that for the gain of built (0.6448) at the 63rd and that for other (0.7276) at t
 The paper used lulcc 1.0 with the R of 2015; our reference used lulcc 1.0.4 on current
 R. We did not investigate the difference further.
 
-\guia{The figures of merit of the paper are only drawn (Figs.~7--8), not printed. A
-visual comparison could be added (digitised curve or side-by-side panels).}
+\guia{A visual comparison with the published Figs.~7--8 could be added (digitised curve
+or side-by-side panels).}
 
 \section{Obstacles}
+\label{sec:obstacles}
 
 \paragraph{The demonstration script does not run unchanged.} With current versions of
 the raster and sp packages, the CLUE-S and ordered allocations stop with
@@ -237,23 +307,13 @@ same grid, values and CRS solves it; this is the only change we made to the scri
 package written to make land use models reproducible thus needed a repair to run
 its own published example eleven years later, for a reason unrelated to the model.
 
-\guia{Consider writing to Simon Moulds before submission (courtesy; the CRS issue may
-interest him, and a fix to the data set would be simple).}
+\guia{Tone of the last sentence: keep, soften, or drop. Consider writing to Simon Moulds
+before submission (courtesy; the CRS issue may interest him, and a fix to the data set
+would be simple).}
 
 \paragraph{An undeclared dependency.} lulcc loads the \texttt{gsubfn} package when it
 builds the explanatory variables, but lists it only as a suggestion; it has to be
 installed by hand.
-
-\paragraph{No seed.} Without a seed, the paper's numbers can only be placed within a
-distribution, which is why the reference had to be generated and why the comparison has
-an ensemble level.
-
-\paragraph{Details visible only in the source code.} Besides the points listed in the
-methods, two behaviours of lulcc are worth noting. The random forest models receive a
-numeric 0/1 response and therefore run in regression mode. The CLUE-S loop has a second
-stopping condition based on the mean signed difference between demand and allocation;
-because the rounded demand sums to the number of cells, that mean is zero and only the
-largest difference stops the iteration.
 
 \section{Conclusion}
 
