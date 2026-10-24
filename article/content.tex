@@ -343,12 +343,34 @@ software versions are fixed in the repository.
 \guia{Replace with the registered run: requirements.lock, Python version and machine;
 lulcc-goldens release and image digest.}
 
+\section*{Declaration of generative AI use}
+
+A large language model from Anthropic (Claude Opus 5.5, in the claude.ai interface with
+code execution) was used throughout this work, from the choice of the article to
+replicate to this text, starting on 24 October 2026. It searched for and read the
+original article and lulcc's source code; compared lulcc with DisSLUCC; wrote the
+scripts that generate the reference outputs, the replication code and its tests, and
+the comparison scripts; drafted the acceptance criteria; ran the smoke-test reference,
+the deterministic comparison and both ensembles in a cloud workspace; found the cause of
+the CRS error described in Section~\ref{sec:obstacles}; and drafted and typeset this
+article. The decisions were the author's: replicating this article, generating the
+reference in a separate archive, using DisSLUCC unchanged and keeping the missing
+pieces in the replication's repository, comparing at a deterministic and an ensemble
+level, and keeping 30 runs. The CLUE-S implementation used, DisSLUCC, predates this
+work. The author reviewed the code and the text, reran the comparison on his own
+computer and is responsible for all the content. The tool is not listed as an author.
+Commits made with it carry a Co-Authored-By line naming the model.
+
+\guia{Check every claim of this statement before submission. In particular: (1) the
+sentence ``reran the comparison on his own computer'' is true only after the Docker
+goldens and the registered run are made on your machine; until then the runs exist
+only in the AI's cloud workspace. (2) Add the dates of the later work. (3) Decide
+whether the acceptance criteria count as drafted by the model and approved by you (as
+written) or as yours.}
+
 \section*{Acknowledgements}
 
-The code and this text were developed with the assistance of an AI model (Claude,
-Anthropic); all results were checked by running the code.
-
-\guia{Confirm the AI-use statement and add funding (CNPq/FAPEMA?), if any.}
+\guia{Funding (CNPq/FAPEMA?), if any; otherwise remove this section.}
 
 \ifguia
 \appendix
