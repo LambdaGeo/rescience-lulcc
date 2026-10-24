@@ -1,13 +1,15 @@
 PY      ?= .venv/bin/python
 GOLDENS ?= ../lulcc-goldens/goldens
 
-.PHONY: help env test check clean
+.PHONY: help env test check ensemble compare clean
 
 help:
 	@echo "make env     create .venv with the pinned packages"
 	@echo "make test    unit tests (seconds)"
 	@echo "make check   compare with the deterministic golden, stage by stage (~1 min)"
 	@echo "             GOLDENS=path/to/lulcc-goldens/goldens"
+	@echo "make ensemble  our 30 seeds (~20 min)"
+	@echo "make compare   apply acceptance.toml to both ensembles, draw the figure"
 
 env:
 	python3 -m venv .venv
@@ -18,6 +20,12 @@ test:
 
 check:
 	$(PY) scripts/check_deterministic.py $(GOLDENS) --out results/deterministic.json
+
+ensemble:
+	$(PY) scripts/run_ensemble.py $(GOLDENS)/data --seeds 30 --out results/ensemble_python.csv
+
+compare:
+	$(PY) scripts/compare_ensemble.py $(GOLDENS)/ensemble results/ensemble_python.csv --outdir results
 
 clean:
 	rm -rf .pytest_cache

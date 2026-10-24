@@ -60,12 +60,27 @@ environment of lulcc-goldens, not yet the Docker release):
 
 The CLUE-S result also holds with the probabilities rounded to float32.
 
+## Result of the ensembles
+
+Criteria in `acceptance.toml`, committed (932d9ed) before either ensemble
+ran. 30 seeds of lulcc (R) against 30 seeds of the replication, 20 metrics
+(glm AUCs of Figs. 5–6; figure of merit forest → built of Fig. 8 at 8
+resolutions, for CLUE-S and ordered allocation): **20 of 20 pass** (means
+within 3 standard errors and Kolmogorov–Smirnov p ≥ 0.01). Details in
+`results/ensemble_comparison.csv`; figure in
+`results/fig_fom_forest_built.png`.
+
+Where the paper's printed AUCs (one unseeded run) fall in lulcc's own 30
+runs: built 0.9384 (70th percentile), gain of built 0.6448 (63rd), other
+0.7276 (7th), forest 0.6423 (just below the minimum of the 30 runs,
+0.6425). The paper used lulcc 1.0 in 2015; the goldens use 1.0.4 on
+current R.
+
 ## Still to do
 
-1. Ensemble: our own partition and jitter over 30 seeds against the 30
-   seeds of the golden (AUCs, Figs. 5–8), with criteria written in
-   `acceptance.toml` before the comparison.
-2. ROC/AUC (sklearn) for Figs. 5–6, and rpart and random forest models.
+1. Regenerate both goldens in the Docker environment and rerun `make check`
+   and `make compare` against them.
+2. rpart and random forest models of Fig. 5 (descriptive only).
 3. Figures side by side with the paper's.
 4. `requirements.lock`, registered run, ReScience article.
 5. Move `JitteredDClueS`, `ordered.py` and `threemap.py` into DisSLUCC.
