@@ -1,0 +1,77 @@
+# To be filled by the author(s) at the time of submission
+# -------------------------------------------------------
+
+title: "[Re] An open and extensible framework for spatially explicit land use change modelling: the lulcc R package"
+
+# GUIA: add co-authors here if any (name, orcid, email, affiliations).
+authors:
+  - name: Sérgio Souza Costa
+    orcid: 0000-0002-0232-4549
+    email: sergio.costa@ufma.br
+    affiliations: 1,*
+
+affiliations:
+  - code:    1
+    name:    LambdaGeo, Universidade Federal do Maranhão (UFMA)
+    address: São Luís, Brazil
+
+keywords: rescience c, replication, land use change, CLUE-S, python, R, lulcc, DisSModel
+
+code:
+  - url: https://github.com/LambdaGeo/rescience-lulcc
+  - doi:
+  - swh:
+
+data:
+  - url: https://github.com/LambdaGeo/lulcc-goldens
+  - doi:
+
+replication:
+ - cite: "Moulds, S., Buytaert, W., & Mijic, A. (2015). An open and extensible framework for spatially explicit land use change modelling: the lulcc R package. Geoscientific Model Development, 8, 3215-3229."
+ - bib:  Moulds:2015
+ - url:  https://gmd.copernicus.org/articles/8/3215/2015/gmd-8-3215-2015.pdf
+ - doi:  10.5194/gmd-8-3215-2015
+
+abstract: "Moulds, Buytaert and Mijic (2015) presented lulcc, an R package for land use change modelling, and demonstrated it on the Plum Island Ecosystems data set: logistic regression suitability, demand by interpolation, CLUE-S and ordered allocation, and validation by three-map comparison. We replicate that application in Python, on the DisSModel framework, with the CLUE-S allocation of DisSLUCC, which derives from LuccME and was written independently of lulcc. We compare at two levels. Given the same inputs, our CLUE-S and ordered allocations reproduce every one of lulcc's simulated maps cell by cell, and our validation tables agree to 1e-16. With independent random numbers, 30 runs of each implementation agree in distribution on all 20 metrics we compared, under criteria recorded before the runs. Running the original demonstration script on current R required one change: the data set's raster objects, serialised by an old version of the raster package, make the allocation stop with a CRS error and had to be rebuilt."
+
+bibliography: bibliography.bib
+
+type: Replication
+
+domain: Geosciences
+
+language: Python
+
+
+# To be filled by the author(s) after acceptance
+# -----------------------------------------------------------------------------
+
+review:
+  - url:
+
+contributors:
+  - name:
+    orcid:
+    role: editor
+  - name:
+    orcid:
+    role: reviewer
+  - name:
+    orcid:
+    role: reviewer
+
+dates:
+  - received:
+  - accepted:
+  - published:
+
+article:
+  - number:
+  - doi:
+  - url:
+
+journal:
+  - name:   "ReScience C"
+  - issn:   2430-3658
+  - volume:
+  - issue:

@@ -1,0 +1,323 @@
+% ---------------------------------------------------------------------------
+% Two versions are built from this file (see Makefile):
+%   article.pdf       clean: no GUIA blocks, appendix replaced by a pointer
+%   article-full.pdf  full:  GUIA blocks (notes to the author) and appendix
+% ---------------------------------------------------------------------------
+
+\guia{Draft v1, 24 Oct 2026. All numbers come from the smoke-test environment
+(R 4.3.3, raster 3.6-26, lulcc 1.0.4 built from source on Ubuntu 24.04), not yet
+from the Docker image of lulcc-goldens. Regenerate the goldens in Docker, rerun
+\texttt{make check} and \texttt{make compare}, and update every number marked in
+Tables~\ref{tab:deterministic} and \ref{tab:ensemble}, the abstract and the text.}
+
+\section{Introduction}
+
+\citet{Moulds:2015} presented lulcc, an R package for spatially explicit land use
+change modelling, with an explicit aim: to make land use change models open, so that
+their results can be reproduced and their code examined and extended. They
+demonstrated the package on the Plum Island Ecosystems data set, which ships with
+it, going through the stages of an inductive model: suitability from logistic
+regression, demand from interpolation between observed maps, spatial allocation by
+CLUE-S \supercite{Verburg:2002} and by an ordered procedure \supercite{Fuchs:2013},
+and pattern validation by three-map comparison \supercite{Pontius:2011}.
+
+We replicate that application with a different implementation in a different
+language. The replication runs on DisSModel \supercite{DisSModel:2026}, a Python
+framework for spatially explicit dynamic models, and its land use package DisSLUCC
+\supercite{DisSLUCC:2026}. The CLUE-S allocation of DisSLUCC was ported from LuccME,
+the land use extension of TerraME \supercite{Carneiro:2013} developed at INPE, and was
+written independently of lulcc; both lulcc and LuccME implement the algorithm from its
+published description \supercite{Verburg:2002}. The comparison therefore tests two
+independent readings of the same description, and lulcc's own demonstration, which
+was written to be reproducible, provides the reference.
+
+\guia{Check with the editor whether the author's past work at INPE on TerraME/LuccME
+(doctorate) needs to be declared. It is not a collaboration with the original
+authors, which is what the journal's rule excludes.}
+
+\section{The original model}
+
+The Plum Island Ecosystems data set\supercite{Pontius:2014} covers a site in north-east
+Massachusetts on a grid of $434 \times 497$ cells of about 100\,m (99.92\,m by
+99.95\,m), 113\,563 of them inside the study area. It holds land use maps for 1985,
+1991 and 1999 (forest, built, other), treated as time points 0, 6 and 14, and three
+explanatory variables: elevation, slope and distance to built land in 1985.
+
+\paragraph{Suitability.} One binary logistic regression per class is fitted on a
+stratified random sample of 10\% of the cells of the 1985 map: built on the three
+variables, forest and other on elevation and slope. The paper also fits regression
+trees and random forests and compares the three model types by the area under the
+ROC curve (AUC) on the remaining cells (its Fig.~5), and evaluates the glm for built
+on the cells that became built between 1985 and 1991 (its Fig.~6).
+
+\paragraph{Demand.} The number of cells of each class at every time point from 0 to
+14 is interpolated linearly between the three observed maps and rounded to integers
+that sum to the number of cells.
+
+\paragraph{CLUE-S allocation.} At each time step every cell receives, for each class,
+its suitability plus an elasticity (0.2 for all classes) if the cell already belongs to
+that class. Each cell is allocated to the class with the highest value plus a
+class-specific iteration term; the term is then increased by the difference between
+demand and allocated area, times a scale factor ($10^{-6}$), until the largest
+difference is at most 50 cells. At every iteration the suitability is perturbed by a
+uniform random number in $[-0.0002, 0.0002]$ (\texttt{jitter.f}).
+
+\paragraph{Ordered allocation.} Classes are visited in a fixed order (built, forest,
+other). A class with rising demand takes the most suitable cells not yet settled; a
+class with falling demand releases its least suitable cells. In the stochastic
+version a cell qualifies only if its suitability exceeds (or, when releasing, falls
+below) a uniform random number.
+
+\paragraph{Validation.} The initial observed map (1985), the final observed map (1999)
+and the simulated map for 1999 are compared at eight resolutions, aggregating
+$2 \times 2$ to $256 \times 256$ cells, through the three-dimensional contingency table
+of \citet{Pontius:2011}. The paper reports the agreement budget and the figure of merit
+of the forest-to-built transition for both allocation methods (its Figs.~7 and 8).
+
+\section{Methods}
+
+\subsection{Reference}
+
+The paper sets no random seed, and three of its steps draw random numbers: the
+training sample, the CLUE-S perturbation and the ordered allocation. The numbers it
+prints are one draw from a distribution and cannot be repeated exactly, not even with
+lulcc. We therefore generated the reference ourselves by running the paper's
+demonstration script (\texttt{demo/gmd-paper.R}) with lulcc 1.0.4
+\supercite{lulcc:2019} in a fixed environment, and archived the outputs
+\supercite{lulccgoldens:2026}. Two kinds of reference were produced:
+\begin{itemize}
+  \item a \emph{deterministic} one, with the randomness removed (seed 1 for the
+    training sample, \texttt{jitter.f} $= 0$, ordered allocation not stochastic),
+    exported stage by stage: training cells, regression coefficients, the suitability
+    matrix, the demand table, all simulated maps and the three-map tables;
+  \item an \emph{ensemble} of 30 runs of the script as published, seeds 1 to 30.
+\end{itemize}
+
+\guia{Add the Zenodo DOI of lulcc-goldens and the Docker image digest once released.}
+
+\subsection{Implementation}
+
+The replication reads the data set from GeoTIFF files exported from the R package and
+uses no R code. Suitability is fitted with statsmodels; the AUC is computed by the
+Mann--Whitney statistic, with ties counted as one half. CLUE-S is the
+allocation component of DisSLUCC version 0.5.0 (\texttt{AllocationDClue\-SLike}), used unchanged, on a DisSModel raster
+backend; the environment starts at time 1, as lulcc does. Three pieces that DisSLUCC
+lacks were written for this replication: the random perturbation of CLUE-S (a subclass
+of the DisSLUCC component), the ordered allocation, and the three-map comparison with
+its agreement budget and figure of merit.
+
+The paper describes these last pieces at the level of the algorithm. Where it leaves a
+choice open we read lulcc's source code and followed it, so that differences in the
+comparison would point at the algorithm rather than at a convention. The points
+resolved this way are:
+\begin{itemize}
+  \item demand rounding: rows rescaled to the number of cells, floored, and the
+    remaining cells given to the classes with the largest remainders;
+  \item training sample: the class codes are numeric, so the stratification of
+    \texttt{caret::}\allowbreak\texttt{createDataPartition}, which lulcc calls, groups them by quantile,
+    which for this map gives two strata, \{forest, built\} and \{other\};
+  \item ordered allocation: which cells are candidates, the temporary class for
+    released cells, the limit of 1000 random draws, and ties kept in cell order;
+  \item three-map comparison: the layout of the table, aggregation blocks anchored at
+    the upper-left corner with incomplete edge blocks weighted by their number of
+    valid cells, and empty denominators left out of the sums.
+\end{itemize}
+The CLUE-S allocation itself was not modified to match lulcc.
+
+\subsection{Comparison and acceptance criteria}
+
+Criteria were recorded in the code repository before either ensemble was run (the
+commit precedes those with results). At the deterministic level, fed with the
+reference's own inputs, each stage must agree within numerical precision and the
+allocated maps must be identical. At the ensemble level, our 30 runs (seeds 1 to 30 of
+NumPy's default generator) are compared with lulcc's 30 on 20 metrics: the AUC of the
+glm for each class and for the gain of built, and the figure of merit of forest to
+built for each allocation method at each of the eight resolutions. A metric passes if
+the means differ by at most three standard errors of the difference and a two-sample
+Kolmogorov--Smirnov test gives $p \geq 0.01$. The regression trees and random forests
+of the paper's Fig.~5 are outside the criteria: we did not reimplement R's rpart and
+randomForest, and other implementations would differ by construction.
+
+\section{Results}
+
+\subsection{Deterministic level}
+
+Table~\ref{tab:deterministic} lists the stages. The CLUE-S allocation of DisSLUCC,
+given lulcc's suitability and demand, produced the same map as lulcc at each of the
+14 time steps, cell by cell; it needed 51 iterations at the first step and 257 at the
+last. The ordered allocation also matched at every step, and the three-map tables and
+figures of merit agreed to rounding error. Running the whole chain from our own
+regression gave the same final map: the coefficients differ by about $10^{-9}$ in
+relative terms, which did not change any allocation.
+
+\begin{table}[h]
+\footnotesize
+\begin{tabular}{p{0.5\linewidth}p{0.42\linewidth}}
+\toprule
+Stage & Result \\
+\midrule
+Observed transitions 1985--1999 (paper, Sect.~3.2) & identical \\
+Regression coefficients, same training cells & max.\ relative difference $1.3 \times 10^{-9}$ \\
+Suitability from lulcc's coefficients & max.\ difference $9 \times 10^{-14}$ \\
+Suitability from our coefficients & max.\ difference $2.8 \times 10^{-10}$ \\
+Demand, $t = 0, \dots, 14$ & identical \\
+CLUE-S, 14 steps & 0 cells differ at every step \\
+Ordered allocation, 14 steps & 0 cells differ at every step \\
+Three-map tables, 8 resolutions, both methods & max.\ difference $1.1 \times 10^{-16}$ \\
+Figure of merit forest $\to$ built & max.\ difference $2.2 \times 10^{-16}$ \\
+Whole chain from our own regression & final map identical \\
+\bottomrule
+\end{tabular}
+\caption{Deterministic level: each stage fed with the reference's inputs.}
+\label{tab:deterministic}
+\end{table}
+
+\subsection{Ensemble level}
+
+All 20 metrics passed. Table~\ref{tab:ensemble} shows a selection and
+Figure~\ref{fig:fom} the figure of merit at every resolution; the spread between runs
+is the same in both implementations, including the larger spread of the stochastic
+ordered allocation.
+
+\begin{table}[h]
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccc}
+\toprule
+Metric & lulcc & replication & diff. & tol. & KS $p$ \\
+ & mean (sd) & mean (sd) & & & \\
+\midrule
+AUC glm, forest & 0.6439 (0.0007) & 0.6437 (0.0006) & $-0.0003$ & 0.0005 & 0.07 \\
+AUC glm, built & 0.9382 (0.0003) & 0.9382 (0.0003) & $-0.0001$ & 0.0002 & 0.81 \\
+AUC glm, other & 0.7295 (0.0010) & 0.7290 (0.0008) & $-0.0004$ & 0.0007 & 0.14 \\
+AUC glm, gain of built & 0.6446 (0.0004) & 0.6446 (0.0004) & $0.0000$ & 0.0003 & 0.81 \\
+FoM CLUE-S, factor 2 & 0.1168 (0.0017) & 0.1167 (0.0019) & $-0.0001$ & 0.0014 & 0.81 \\
+FoM CLUE-S, factor 16 & 0.3766 (0.0058) & 0.3756 (0.0062) & $-0.0010$ & 0.0046 & 0.81 \\
+FoM CLUE-S, factor 256 & 0.7684 (0.0052) & 0.7688 (0.0052) & $+0.0004$ & 0.0040 & 0.96 \\
+FoM ordered, factor 2 & 0.1079 (0.0017) & 0.1079 (0.0019) & $0.0000$ & 0.0014 & 1.00 \\
+FoM ordered, factor 16 & 0.4311 (0.0188) & 0.4308 (0.0199) & $-0.0003$ & 0.0150 & 0.96 \\
+FoM ordered, factor 256 & 0.6795 (0.0326) & 0.6784 (0.0327) & $-0.0011$ & 0.0253 & 1.00 \\
+\bottomrule
+\end{tabular}
+\caption{Ensemble level, 30 runs each (selection of the 20 metrics; all passed).
+FoM: figure of merit of the forest-to-built transition at 1999. Tolerance: three
+standard errors of the difference of means.}
+\label{tab:ensemble}
+\end{table}
+
+\begin{figure}[h]
+\includegraphics[width=\linewidth]{figures/fig_fom_forest_built.png}
+\caption{Figure of merit of the forest-to-built transition against resolution, as in
+Fig.~8 of the original article: mean and range of 30 runs of lulcc and of the
+replication.}
+\label{fig:fom}
+\end{figure}
+
+The values printed in the paper fall inside lulcc's own spread with one exception. In
+our 30 runs of lulcc, the paper's AUC for built (0.9384) is at the 70th percentile,
+that for the gain of built (0.6448) at the 63rd and that for other (0.7276) at the
+7th; the AUC for forest (0.6423) is slightly below the lowest of the 30 runs (0.6425).
+The paper used lulcc 1.0 with the R of 2015; our reference used lulcc 1.0.4 on current
+R. We did not investigate the difference further.
+
+\guia{The figures of merit of the paper are only drawn (Figs.~7--8), not printed. A
+visual comparison could be added (digitised curve or side-by-side panels).}
+
+\section{Obstacles}
+
+\paragraph{The demonstration script does not run unchanged.} With current versions of
+the raster and sp packages, the CLUE-S and ordered allocations stop with
+\texttt{different crs}. The rasters of the data set were serialised by an old version
+of raster, before the slot that holds the coordinate reference system in WKT form
+existed; the allocation creates each simulated map from the initial one, the new
+object carries a CRS in the current form and the old one does not, and the check that
+precedes stacking them fails. Reassigning the CRS of the old objects does not help: it
+leaves them with no CRS at all. Rebuilding each layer as a new raster object with the
+same grid, values and CRS solves it; this is the only change we made to the script. A
+package written to make land use models reproducible thus needed a repair to run
+its own published example eleven years later, for a reason unrelated to the model.
+
+\guia{Consider writing to Simon Moulds before submission (courtesy; the CRS issue may
+interest him, and a fix to the data set would be simple).}
+
+\paragraph{An undeclared dependency.} lulcc loads the \texttt{gsubfn} package when it
+builds the explanatory variables, but lists it only as a suggestion; it has to be
+installed by hand.
+
+\paragraph{No seed.} Without a seed, the paper's numbers can only be placed within a
+distribution, which is why the reference had to be generated and why the comparison has
+an ensemble level.
+
+\paragraph{Details visible only in the source code.} Besides the points listed in the
+methods, two behaviours of lulcc are worth noting. The random forest models receive a
+numeric 0/1 response and therefore run in regression mode. The CLUE-S loop has a second
+stopping condition based on the mean signed difference between demand and allocation;
+because the rounded demand sums to the number of cells, that mean is zero and only the
+largest difference stops the iteration.
+
+\section{Conclusion}
+
+The Plum Island Ecosystems application of lulcc was replicated. With the same inputs,
+an independent implementation of CLUE-S reproduces lulcc's maps exactly, and so do our
+ordered allocation and validation; with independent random numbers, the two
+implementations agree in distribution on every metric compared. The main obstacle was
+not in the model but in the environment around it.
+
+\section*{Reproducing this replication}
+
+Code: \url{https://github.com/LambdaGeo/rescience-lulcc}. Reference outputs and the
+Docker environment that produces them: \url{https://github.com/LambdaGeo/lulcc-goldens}.
+With the reference downloaded, \texttt{make env}, \texttt{make check} (about one minute),
+\texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
+Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figure~\ref{fig:fom}. The
+software versions are fixed in the repository.
+
+\guia{Replace with the registered run: requirements.lock, Python version and machine;
+lulcc-goldens release and image digest.}
+
+\section*{Acknowledgements}
+
+The code and this text were developed with the assistance of an AI model (Claude,
+Anthropic); all results were checked by running the code.
+
+\guia{Confirm the AI-use statement and add funding (CNPq/FAPEMA?), if any.}
+
+\ifguia
+\appendix
+\section{All 20 ensemble metrics}
+
+\begin{table}[h]
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccccc}
+\toprule
+Metric & lulcc mean & sd & repl.\ mean & sd & diff. & tol. & KS $p$ \\
+\midrule
+AUC glm, forest & 0.6439 & 0.0007 & 0.6437 & 0.0006 & $-0.0003$ & 0.0005 & 0.07 \\
+AUC glm, built & 0.9382 & 0.0003 & 0.9382 & 0.0003 & $-0.0001$ & 0.0002 & 0.81 \\
+AUC glm, other & 0.7295 & 0.0010 & 0.7290 & 0.0008 & $-0.0004$ & 0.0007 & 0.14 \\
+AUC glm, gain of built & 0.6446 & 0.0004 & 0.6446 & 0.0004 & $0.0000$ & 0.0003 & 0.81 \\
+FoM CLUE-S, 2 & 0.1168 & 0.0017 & 0.1167 & 0.0019 & $-0.0001$ & 0.0014 & 0.81 \\
+FoM CLUE-S, 4 & 0.1880 & 0.0041 & 0.1876 & 0.0046 & $-0.0004$ & 0.0033 & 0.96 \\
+FoM CLUE-S, 8 & 0.2905 & 0.0055 & 0.2898 & 0.0061 & $-0.0006$ & 0.0045 & 0.96 \\
+FoM CLUE-S, 16 & 0.3766 & 0.0058 & 0.3756 & 0.0062 & $-0.0010$ & 0.0046 & 0.81 \\
+FoM CLUE-S, 32 & 0.4756 & 0.0077 & 0.4749 & 0.0080 & $-0.0007$ & 0.0061 & 0.96 \\
+FoM CLUE-S, 64 & 0.5767 & 0.0081 & 0.5754 & 0.0082 & $-0.0013$ & 0.0063 & 0.96 \\
+FoM CLUE-S, 128 & 0.7134 & 0.0116 & 0.7120 & 0.0123 & $-0.0014$ & 0.0093 & 0.81 \\
+FoM CLUE-S, 256 & 0.7684 & 0.0052 & 0.7688 & 0.0052 & $+0.0004$ & 0.0040 & 0.96 \\
+FoM ordered, 2 & 0.1079 & 0.0017 & 0.1079 & 0.0019 & $0.0000$ & 0.0014 & 1.00 \\
+FoM ordered, 4 & 0.1890 & 0.0052 & 0.1884 & 0.0058 & $-0.0006$ & 0.0043 & 1.00 \\
+FoM ordered, 8 & 0.3103 & 0.0115 & 0.3097 & 0.0129 & $-0.0005$ & 0.0095 & 0.96 \\
+FoM ordered, 16 & 0.4311 & 0.0188 & 0.4308 & 0.0199 & $-0.0003$ & 0.0150 & 0.96 \\
+FoM ordered, 32 & 0.5539 & 0.0265 & 0.5523 & 0.0280 & $-0.0016$ & 0.0211 & 1.00 \\
+FoM ordered, 64 & 0.6265 & 0.0307 & 0.6248 & 0.0305 & $-0.0017$ & 0.0237 & 1.00 \\
+FoM ordered, 128 & 0.6683 & 0.0393 & 0.6664 & 0.0397 & $-0.0019$ & 0.0306 & 1.00 \\
+FoM ordered, 256 & 0.6795 & 0.0326 & 0.6784 & 0.0327 & $-0.0011$ & 0.0253 & 1.00 \\
+\bottomrule
+\end{tabular}
+\caption{Ensemble level, all metrics (30 runs each). All passed.}
+\end{table}
+\else
+\noindent\emph{Complete table of the 20 ensemble metrics: see
+\texttt{results/ensemble\_comparison.csv} in the code repository.}
+\fi

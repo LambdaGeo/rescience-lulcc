@@ -1,3 +1,13 @@
 .venv/
 __pycache__/
 .pytest_cache/
+article/*.aux
+article/*.log
+article/*.out
+article/*.bbl
+article/*.bcf
+article/*.blg
+article/*.run.xml
+article/*.fls
+article/*.fdb_latexmk
+article/*.xdv

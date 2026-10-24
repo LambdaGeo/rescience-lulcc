@@ -1,0 +1,21 @@
+\documentclass{rescience}
+
+% GUIA blocks (notes to the author) and the appendix appear only in the full
+% version: build it with `make full` (defines \withguia before this file).
+\newif\ifguia
+\ifdefined\withguia\guiatrue\fi
+\newcommand{\guia}[1]{\ifguia\par\smallskip\noindent\fcolorbox{orange}{orange!8}{%
+  \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\footnotesize\sffamily
+  \textbf{GUIA.} #1}}\par\smallskip\fi}
+\usepackage{booktabs}
+
+\begin{document}
+\input{header.tex}
+\input{content.tex}
+
+\hypersetup{linkcolor=black,urlcolor=darkgray}
+\renewcommand\emph[1]{{\bfseries #1}}
+\setlength\bibitemsep{0pt}
+\printbibliography
+
+\end{document}
