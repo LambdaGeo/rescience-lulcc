@@ -1,0 +1,9 @@
+# Provisional pins; becomes requirements.lock (make lock) before the registered run.
+dissmodel==0.6.6
+disslucc==0.5.0
+numpy>=2.0
+pandas>=2.2
+rasterio>=1.4
+scipy>=1.13
+statsmodels>=0.14
+pytest>=8
