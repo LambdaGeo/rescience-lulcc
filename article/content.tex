@@ -247,6 +247,19 @@ Whole chain from our own regression & final map identical \\
 \label{tab:deterministic}
 \end{table}
 
+Figure~\ref{fig:maps} shows the observed maps and the 1999 maps simulated by CLUE-S in
+both implementations, which the original article does not show. The two simulated maps
+are the same map. Both are visibly more clustered than the observed 1999 map; whatever its
+cause, it lies in the model and its set-up, which the two implementations share.
+
+\begin{figure}[h]
+\includegraphics[width=\linewidth]{figures/fig_maps.png}
+\caption{Land use observed in 1985 and 1999, and simulated for 1999 by CLUE-S at the
+deterministic level, by lulcc and by the replication (0 cells differ). Colours as in
+Fig.~3 of the original article.}
+\label{fig:maps}
+\end{figure}
+
 \subsection{Ensemble level}
 
 All 20 metrics passed. Table~\ref{tab:ensemble} shows a selection and
@@ -337,7 +350,8 @@ Code: \url{https://github.com/LambdaGeo/rescience-lulcc}. Reference outputs and 
 Docker environment that produces them: \url{https://github.com/LambdaGeo/lulcc-goldens}.
 With the reference downloaded, \texttt{make env}, \texttt{make check} (about one minute),
 \texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
-Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figure~\ref{fig:fom}. The
+Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:maps}
+and \ref{fig:fom} (\texttt{make maps} for the former). The
 software versions are fixed in the repository.
 
 \guia{Replace with the registered run: requirements.lock, Python version and machine;

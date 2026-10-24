@@ -1,7 +1,7 @@
 PY      ?= .venv/bin/python
 GOLDENS ?= ../lulcc-goldens/goldens
 
-.PHONY: help env test check ensemble compare clean
+.PHONY: help env test check ensemble compare maps clean
 
 help:
 	@echo "make env     create .venv with the pinned packages"
@@ -10,6 +10,7 @@ help:
 	@echo "             GOLDENS=path/to/lulcc-goldens/goldens"
 	@echo "make ensemble  our 30 seeds (~20 min)"
 	@echo "make compare   apply acceptance.toml to both ensembles, draw the figure"
+	@echo "make maps      map figure of the article (observed and simulated 1999)"
 
 env:
 	python3 -m venv .venv
@@ -26,6 +27,9 @@ ensemble:
 
 compare:
 	$(PY) scripts/compare_ensemble.py $(GOLDENS)/ensemble results/ensemble_python.csv --outdir results
+
+maps:
+	$(PY) scripts/make_maps.py $(GOLDENS) --out results/fig_maps.png
 
 clean:
 	rm -rf .pytest_cache
