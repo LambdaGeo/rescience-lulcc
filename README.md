@@ -78,8 +78,8 @@ current R.
 
 ## Still to do
 
-1. Regenerate both goldens in the Docker environment and rerun `make check`
-   and `make compare` against them.
+1. ~~Regenerate the goldens in the Docker environment and rerun `make check`
+   and `make compare` against them~~ (done 25 Oct 2026: same results).
 2. rpart and random forest models of Fig. 5 (descriptive only).
 3. Figures side by side with the paper's.
 4. `requirements.lock`, registered run, ReScience article.

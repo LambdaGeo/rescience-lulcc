@@ -6,12 +6,10 @@
 % first, then analysis of the original paper, set-up, implementation, results.
 % ---------------------------------------------------------------------------
 
-\guia{Draft v2, 24 Oct 2026. All numbers come from the smoke-test environment
-(R 4.3.3, raster 3.6-26, lulcc 1.0.4 built from source on Ubuntu 24.04), not yet
-from the Docker image of lulcc-goldens. Regenerate the goldens in Docker, rerun
-\texttt{make check} and \texttt{make compare}, and update every number in
-Section~\ref{sec:setup}, Tables~\ref{tab:deterministic} and \ref{tab:ensemble}, the
-abstract and the text.}
+\guia{Draft v3, 25 Oct 2026. Reference regenerated in the Docker image of lulcc-goldens
+(R 4.5.1) and the comparison rerun on the first author's computer: same results as the
+draft. Still open: CPU of the OptiPlex 7050, Python versions from requirements.lock,
+Zenodo DOI of lulcc-goldens and image digest.}
 
 \section{Introduction}
 
@@ -166,16 +164,27 @@ references were produced:
 The only change to the script is the repair described in
 Section~\ref{sec:obstacles}.
 
-\paragraph{Software.} Reference: R 4.3.3, lulcc 1.0.4, raster 3.6-26, caret 6.0-94,
-ROCR 1.0-11, randomForest 4.7-1.1. Replication: Python 3.13, DisSModel 0.6.6, DisSLUCC
-0.5.0, NumPy 2.5, SciPy 1.18, statsmodels 0.15, rasterio 1.5.
+\paragraph{Software.} Reference: a Docker image based on rocker/geospatial 4.5.1, with
+R 4.5.1 and packages from a dated snapshot of CRAN (1 October 2026): lulcc 1.0.4, raster
+3.6-32, sp 2.2-0, caret 7.0-1, ROCR 1.0-12, randomForest 4.7-1.2, rpart 4.1.27. The lulcc
+1.0.4 on CRAN was republished in November 2025, but its source package is the one built
+by the author in February 2019. Replication: Python 3.13, DisSModel 0.6.6, DisSLUCC 0.5.0,
+NumPy 2.5, SciPy 1.18, statsmodels 0.15, rasterio 1.5.
 
-\paragraph{Hardware and time.} Both were run on one Linux machine with two cores of an
-Intel Xeon at 2.1\,GHz and 7\,GB of memory, partly at the same time. One run of CLUE-S
-over the 14 steps took on average 12\,s in lulcc (whose inner loop is in C) and 30\,s in
-the replication; the ordered allocation took 3\,s and 0.2\,s. One complete run of the
+\paragraph{Hardware and time.} The reference and the replication were run on one
+desktop computer (Dell OptiPlex 7050, Ubuntu). One run of CLUE-S over the 14 steps took
+on average 11\,s in lulcc, whose inner loop is in C, and about 20\,s in the
+replication; the ordered allocation took 3\,s and 0.2\,s. One complete run of the
 paper's experiment, including the regression trees and random forests of lulcc, took
 about 90\,s in R; one run of the replication, about 30\,s.
+
+\paragraph{A second environment.} The reference was also generated, before the Docker
+image, with R 4.3.3 and raster 3.6-26 from Ubuntu 24.04. The deterministic simulated maps
+were byte-identical in both environments; the regression coefficients differed in the
+last digits, and in 18 of the 480 figure-of-merit values of the ensemble this changed
+the result by at most $10^{-4}$, leaving every mean and standard deviation of
+Table~\ref{tab:ensemble} unchanged. The replication, run against either reference,
+gave the results reported here.
 
 \guia{Add the Zenodo DOI of lulcc-goldens and the Docker image digest once released;
 update software versions and times from the Docker run (measure without concurrent
@@ -364,15 +373,16 @@ code execution) was used throughout this work, from the choice of the article to
 replicate to this text, starting on 24 October 2026. It searched for and read the
 original article and lulcc's source code; compared lulcc with DisSLUCC; wrote the
 scripts that generate the reference outputs, the replication code and its tests, and
-the comparison scripts; drafted the acceptance criteria; ran the smoke-test reference,
-the deterministic comparison and both ensembles in a cloud workspace; found the cause of
+the comparison scripts; drafted the acceptance criteria; ran a first reference, the
+deterministic comparison and both ensembles in a cloud workspace; found the cause of
 the CRS error described in Section~\ref{sec:obstacles}; and drafted and typeset this
 article. The decisions were the first author's: replicating this article, generating the
 reference in a separate archive, using DisSLUCC unchanged and keeping the missing
 pieces in the replication's repository, comparing at a deterministic and an ensemble
 level, and keeping 30 runs. The CLUE-S implementation used, DisSLUCC, predates this
-work. The authors reviewed the code and the text, reran the comparison on their own
-computers and are responsible for all the content. The tool is not listed as an author.
+work. The first author regenerated the reference in the Docker image and reran the
+comparison on his own computer, with the same results; the authors reviewed the code and
+the text and are responsible for all the content. The tool is not listed as an author.
 Commits made with it carry a Co-Authored-By line naming the model.
 
 \guia{Co-authors (Denilson da Silva Bezerra, José Magno Pinheiro Alves): state what
@@ -381,12 +391,9 @@ machine (as in the Open LUCC workflow), review of the text. If someone does such
 report it in Section~\ref{sec:setup}: a second machine strengthens the replication.
 Fill their e-mails in metadata.yaml.}
 
-\guia{Check every claim of this statement before submission. In particular: (1) the
-sentence ``reran the comparison on their own computers'' is true only after the Docker
-goldens and the registered run are made on your machine; until then the runs exist
-only in the AI's cloud workspace. (2) Add the dates of the later work. (3) Decide
-whether the acceptance criteria count as drafted by the model and approved by you (as
-written) or as yours.}
+\guia{Check every claim of this statement before submission: add the dates of the later
+work; decide whether the acceptance criteria count as drafted by the model and approved
+by you (as written) or as yours; extend the run sentence if a co-author reruns it.}
 
 \section*{Acknowledgements}
 
