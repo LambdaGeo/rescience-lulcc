@@ -35,6 +35,7 @@ import json
 import sys
 import tomllib
 import warnings
+from importlib import metadata
 from pathlib import Path
 
 import numpy as np
@@ -100,11 +101,15 @@ def main() -> int:
         return maps
 
     # provenance
+    # The virtual environment may live inside this repository (.venv), so the test is
+    # not "outside ROOT" but "inside the installed distribution and not in src/".
     src = Path(inspect.getsourcefile(AllocationDClueSLike)).resolve()
     pkg = Path(disslucc.__file__).resolve().parent
-    report["disslucc"] = {"version": getattr(disslucc, "__version__", None), "file": str(src)}
+    dist = metadata.distribution("disslucc")
+    dist_pkg = Path(dist.locate_file("disslucc/__init__.py")).resolve().parent
+    report["disslucc"] = {"version": dist.version, "file": str(src)}
     check("provenance: AllocationDClueSLike comes from the installed disslucc package",
-          src.is_relative_to(pkg) and not src.is_relative_to(ROOT))
+          src.is_relative_to(pkg) and pkg == dist_pkg and not src.is_relative_to(ROOT / "src"))
     calls = {"n": 0}
     orig = AllocationDClueSLike.execute
 
