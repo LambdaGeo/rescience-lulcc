@@ -1,7 +1,7 @@
 {
   "disslucc": {
-    "version": null,
-    "file": "/tmp/claude-0/venv/lib/python3.13/site-packages/disslucc/components/allocation/clue_s.py"
+    "version": "0.5.0",
+    "file": "/home/sergio/develop/github/lambdageo/rescience-lulcc/.venv/lib/python3.12/site-packages/disslucc/components/allocation/clue_s.py"
   },
   "checks": {
     "provenance: AllocationDClueSLike comes from the installed disslucc package": true,
