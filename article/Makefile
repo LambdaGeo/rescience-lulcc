@@ -17,6 +17,9 @@ article: article.pdf
 metadata.tex: metadata.yaml
 	./yaml-to-latex.py -i $< -o $@
 
+figures/fig_method.pdf: figures/fig_method.tex
+	cd figures && xelatex -interaction=nonstopmode fig_method.tex && rm -f fig_method.aux fig_method.log
+
 
 # MAIN LATEXMK RULE
 # -----------------------------------------------------------------------------
@@ -26,7 +29,7 @@ metadata.tex: metadata.yaml
 # -interaction=nonstopmode keeps the pdflatex backend from stopping at a
 # missing file reference and interactively asking you for an alternative.
 
-article.pdf: article.tex content.tex bibliography.bib metadata.tex rescience.cls
+article.pdf: article.tex content.tex bibliography.bib metadata.tex rescience.cls figures/fig_method.pdf
 	latexmk -pdf -pdflatex="xelatex -interaction=nonstopmode" -use-make article.tex
 
 clean:

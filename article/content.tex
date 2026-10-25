@@ -31,27 +31,57 @@ lulcc's own demonstration as the reference.
 
 \section{Replication summary}
 
-The replication runs on DisSModel \supercite{DisSModel:2026}, a Python framework for
-spatially explicit dynamic models, and its land use package DisSLUCC
-\supercite{DisSLUCC:2026}. The code is original. Its parts have three origins:
+Figure~\ref{fig:method} summarises the replication. On the left is the reference: lulcc
+1.0.4 running the article's own demonstration script, in a Docker image. On the right is
+the replication, which runs on DisSModel \supercite{DisSModel:2026}, a Python framework
+for spatially explicit dynamic models, and its land use package DisSLUCC
+\supercite{DisSLUCC:2026}. In the centre are the four stages of the original model
+(Section~\ref{sec:model}), each implemented separately on both sides. The code of the
+replication is original, and its parts have three origins, shown in the right-hand boxes:
 \begin{itemize}
   \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged at
     the deterministic level. It was ported, before and independently of this work, from
     the discrete allocation of LuccME, \texttt{AllocationD\-ClueS\-Like}, and not from
-    lulcc. To add the random perturbation, a subclass replaces its iteration loop; with
-    the perturbation set to zero it gives the same maps as the published component. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
+    lulcc. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
     outputs of TerraME with the same number of iterations in every year and differences
     of at most $1.2 \times 10^{-7}$ \supercite{DisSLUCCbenchmark:2026}.
-  \item \emph{Written for this replication}: data reading, suitability, demand, the
-    random perturbation of CLUE-S, the ordered allocation, and the three-map comparison
-    with its agreement budget and figure of merit. They follow the original article, and
-    where it leaves a choice open they follow lulcc's source code
-    (Section~\ref{sec:analysis}). For the ordered allocation, the three-map comparison,
-    the demand rounding and the training sample this means that our code follows
-    lulcc's procedure step by step, in Python; their agreement with lulcc verifies these
-    ports, not an independent reading. Only the CLUE-S allocation and the logistic
-    regression were written without reference to lulcc's code.
+  \item \emph{Written for this replication, without reference to lulcc's code}: reading
+    the data, the logistic regression (statsmodels) and its AUC, and the potential that
+    passes suitability and elasticity to the CLUE-S allocation.
+  \item \emph{Ports of lulcc's code}: the demand rounding, the stratified training sample,
+    the random perturbation of CLUE-S (a subclass of the DisSLUCC component that replaces
+    its iteration loop), the ordered allocation, and the three-map comparison with its
+    agreement budget and figure of merit. They follow the original article, and where it
+    leaves a choice open they follow lulcc's procedure step by step, in Python
+    (Section~\ref{sec:analysis}); their agreement with lulcc verifies the ports, not an
+    independent reading.
 \end{itemize}
+
+\begin{figure}[t]
+\includegraphics[width=\linewidth]{figures/fig_method.pdf}
+\caption{The replication and its comparison with lulcc. Left: the reference, lulcc's
+functions in the demonstration script. Right: the replication and the origin of each
+part. Centre: the four stages of the original model and, in green, the result of the
+deterministic comparison at each stage (Table~\ref{tab:deterministic}). The dashed arrow
+is the only input that the replication's own chain takes from the reference. Bottom:
+the two levels of comparison (Section~\ref{sec:comparison}).}
+\label{fig:method}
+\end{figure}
+
+The comparison has two levels, at the bottom of Fig.~\ref{fig:method}. At the
+\emph{deterministic} level the randomness is removed from both sides, and the stages can be
+fed with the reference's own inputs, so that a difference points at one stage; run as a
+whole chain, the replication takes from lulcc only the cells of the training sample,
+because R's random sample cannot be drawn again in Python. At the \emph{ensemble} level
+both sides run the published script, with its randomness, using independent random
+numbers, and are compared in distribution.
+
+Three parts of the original application are not replicated: the regression trees and
+random forests of the paper's Fig.~5, since we did not reimplement R's rpart and
+randomForest; the agreement budget at the ensemble level, which is compared only at the
+deterministic level; and the published curves of Figs.~7--8, whose values the paper does
+not give.
+
 Given the same inputs, the CLUE-S allocation of DisSLUCC reproduces every simulated map
 of lulcc cell by cell, and so do our ports of the ordered allocation and of the
 validation tables (to $10^{-16}$). With
@@ -61,6 +91,7 @@ demonstration script required one repair, unrelated to the model
 (Section~\ref{sec:obstacles}).
 
 \section{The original model}
+\label{sec:model}
 
 The Plum Island Ecosystems data set\supercite{Pontius:2014} covers a site in north-east
 Massachusetts on a grid of $434 \times 497$ cells of about 100\,m (99.92\,m by
@@ -167,27 +198,20 @@ references were produced:
 The only change to the script is the repair described in
 Section~\ref{sec:obstacles}.
 
-\paragraph{Software.} Reference: a Docker image based on rocker/geospatial 4.5.1, with
+\paragraph{Software.} Reference: a Docker image based on rocker/geospatial 4.5.1 (pinned by digest,
+\texttt{sha256:6483198da9a6\ldots}; full digest in the goldens' \texttt{Dockerfile}), with
 R 4.5.1 and packages from a dated snapshot of CRAN (1 October 2026): lulcc 1.0.4, raster
 3.6-32, sp 2.2-0, caret 7.0-1, ROCR 1.0-12, randomForest 4.7-1.2, rpart 4.1.27. The lulcc
 1.0.4 on CRAN was republished in November 2025, but its source package is the one built
-by the author in February 2019. Replication: Python 3.13, DisSModel 0.6.6, DisSLUCC 0.5.0,
+by the author in February 2019. Replication: Python 3.12, DisSModel 0.6.6, DisSLUCC 0.5.0,
 NumPy 2.5, SciPy 1.18, statsmodels 0.15, rasterio 1.5.
 
 \paragraph{Hardware and time.} The reference and the replication were run on one
-desktop computer (Dell OptiPlex 7050, Ubuntu). One run of CLUE-S over the 14 steps took
+desktop computer (Dell OptiPlex 7050, Intel Core i7-7700T at 2.9\,GHz, Ubuntu). One run of CLUE-S over the 14 steps took
 on average 11\,s in lulcc, whose inner loop is in C, and about 20\,s in the
 replication; the ordered allocation took 3\,s and 0.2\,s. One complete run of the
 paper's experiment, including the regression trees and random forests of lulcc, took
 about 90\,s in R; one run of the replication, about 30\,s.
-
-\paragraph{A second environment.} The reference was also generated, before the Docker
-image, with R 4.3.3 and raster 3.6-26 from Ubuntu 24.04. The deterministic simulated maps
-were byte-identical in both environments; the regression coefficients differed in the
-last digits, and in 18 of the 480 figure-of-merit values of the ensemble this changed
-the result by at most $10^{-4}$, leaving every mean and standard deviation of
-Table~\ref{tab:ensemble} unchanged. The replication, run against either reference,
-gave the results reported here.
 
 \section{Implementation}
 
@@ -202,6 +226,21 @@ the perturbation set to zero, it gives the same result as the published componen
 modules, operating on the valid cells in the raster's row-major order, which is also
 lulcc's cell order.
 
+\paragraph{Why the maps can be identical.} Two independently written implementations of
+an iterative allocation give the same map only if they agree on everything that decides
+a cell. lulcc's C loop and DisSLUCC's component do. The score of a class in a cell is its
+suitability, plus the elasticity if the cell belonged to that class at the start of the
+step, plus a class term that starts at zero at every step. Each cell takes the class with
+the highest score, the first class in order on a tie. After each pass the class term
+grows by the difference between demand and allocated cells times the scale factor, and
+the loop stops when the largest absolute difference is at most the tolerance (lulcc's
+second condition, on the mean difference, is inactive; Section~\ref{sec:analysis}). The
+parameters of DisSLUCC were translated from lulcc's, not tuned: the scale factor as
+\texttt{factor\_iteration}, the tolerance as \texttt{max\_difference}, a cell area of 1 so
+that demand is counted in cells, and a transition matrix of ones, the rule matrix of the
+demonstration script. The two differ only where this application never goes: at the
+iteration limit DisSLUCC stops with an error, lulcc returns the last map with a warning.
+
 \section{Comparison and acceptance criteria}
 \label{sec:comparison}
 
@@ -209,7 +248,7 @@ Criteria were recorded in the code repository before either ensemble was run; th
 commit that adds them precedes those with results.
 
 \paragraph{Deterministic level.} Each stage is fed with the reference's own inputs, so
-that a difference points at that stage only. Coefficients and suitability must agree
+that a difference points at that stage only (centre of Fig.~\ref{fig:method}). Coefficients and suitability must agree
 within numerical precision; demand, allocated maps and validation tables must be
 identical or agree to rounding error.
 
@@ -225,8 +264,10 @@ implementations would differ by construction.
 \section{Results}
 
 \subsection{Deterministic level}
+\label{sec:det}
 
-Table~\ref{tab:deterministic} lists the stages. The CLUE-S allocation of DisSLUCC,
+Table~\ref{tab:deterministic} lists the stages; the main results are also shown in the centre
+of Fig.~\ref{fig:method}. The CLUE-S allocation of DisSLUCC,
 given lulcc's suitability and demand, produced the same map as lulcc at each of the
 14 time steps, cell by cell; it needed 51 iterations at the first step and 257 at the
 last. The ordered allocation also matched at every step, and the three-map tables and
@@ -275,8 +316,9 @@ both implementations, which the original article does not show: it reports the
 simulations only through the agreement budget and the figure of merit. The
 replication's map comes from its whole chain, with its own regression and demand; only
 the training cells are taken from the reference. The two simulated maps are the same
-map. Both are visibly more clustered than the observed 1999 map; whatever its
-cause, it lies in the model and its set-up, which the two implementations share.
+map. Both look more clustered than the observed 1999 map, an
+impression we did not quantify; since the two maps are identical, it is a property of the
+model and its set-up, not of either implementation.
 
 \begin{figure}[h]
 \includegraphics[width=\linewidth]{figures/fig_maps.png}
@@ -323,7 +365,8 @@ FoM ordered, factor 256 & 0.6795 (0.0326) & 0.6784 (0.0327) & $-0.0011$ & 0.0253
 \end{tabular}
 \caption{Ensemble level, 30 runs each (selection of the 20 metrics; all passed).
 FoM: figure of merit of the forest-to-built transition at 1999. Tolerance: three
-standard errors of the difference of means.}
+standard errors of the difference of means. Differences are computed before
+rounding.}
 \label{tab:ensemble}
 \end{table}
 
@@ -342,7 +385,9 @@ our 30 runs of lulcc, the paper's AUC for built (0.9384) is at the 70th percenti
 that for the gain of built (0.6448) at the 63rd and that for other (0.7276) at the
 7th; the AUC for forest (0.6423) is slightly below the lowest of the 30 runs (0.6425).
 The paper used lulcc 1.0 with the R of 2015; our reference used lulcc 1.0.4 on current
-R. We did not investigate the difference further.
+R. We did not investigate the difference further. It is not unexpected: a value from the
+same distribution falls outside the range of 30 runs with probability 2/31, about 6\%,
+and for at least one of four AUCs with probability about 23\%.
 
 \section{Obstacles}
 \label{sec:obstacles}
@@ -367,9 +412,10 @@ installed by hand.
 
 The Plum Island Ecosystems application of lulcc was replicated. With the same inputs,
 an independent implementation of CLUE-S reproduces lulcc's maps exactly, and so do our
-ordered allocation and validation. The same component also reproduces the discrete
-labs of LuccME: lulcc and LuccME, written independently from the same published
-description, are reproduced by one implementation. With independent random numbers, the
+ported ordered allocation and validation. That implementation was ported from LuccME
+and reproduces LuccME's discrete labs, as a port should; what this replication adds is
+that it also reproduces lulcc, so on this application the two independent readings of
+the description of CLUE-S, in LuccME and in lulcc, coincide. With independent random numbers, the
 two implementations agree in distribution on every metric compared. The main obstacle was
 not in the model but in the environment around it.
 
@@ -377,10 +423,12 @@ not in the model but in the environment around it.
 
 Code: \url{https://github.com/LambdaGeo/rescience-lulcc}. Reference outputs and the
 Docker environment that produces them: \url{https://github.com/LambdaGeo/lulcc-goldens}.
-With the reference downloaded, \texttt{make env}, \texttt{make check} (about one minute),
-\texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
-Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:maps}
-and \ref{fig:fom} (\texttt{make maps} for the former). The
+With the reference downloaded, \texttt{make env}, then \texttt{make check} (about one
+minute), \texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
+Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figure~\ref{fig:fom};
+\texttt{make maps} draws Figure~\ref{fig:maps}, and \texttt{make audit} (about three
+minutes) runs the checks of Section~\ref{sec:det}. Each takes the reference's directory
+as \texttt{GOLDENS=}. The
 versions of the Python packages are fixed in the file \texttt{requirements\allowbreak.lock}, and the R
 environment of the reference in the Dockerfile of lulcc-goldens. The code is released
 under GPL-3.0-or-later, the licence family of lulcc, because part of it follows lulcc's

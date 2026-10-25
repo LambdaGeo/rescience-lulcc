@@ -15,8 +15,21 @@ authors:
     given-names: José Magno Pinheiro
     affiliation: Universidade Federal do Maranhão (UFMA)
     orcid: "https://orcid.org/0009-0003-7212-4870"
+  - family-names: Oliveira
+    given-names: Hissa Barbara
+    affiliation: Universidade Federal do Maranhão (UFMA)
+    orcid: "https://orcid.org/0009-0002-4584-2693"
+  - family-names: Vale
+    given-names: Mateus Dutra
+    affiliation: Universidade Federal do Maranhão (UFMA)
+    orcid: "https://orcid.org/0009-0005-1301-879X"
+  - family-names: Zhao
+    given-names: Samylli Kalei Silva
+    affiliation: Universidade Federal do Maranhão (UFMA)
+    orcid: "https://orcid.org/0009-0009-6490-4459"
 license: GPL-3.0-or-later
-version: 0.1.0-dev
+version: 0.1.0
+date-released: 2026-10-26
 repository-code: "https://github.com/LambdaGeo/rescience-lulcc"
 keywords:
   - replication

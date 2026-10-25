@@ -19,6 +19,21 @@ authors:
     email:
     affiliations: 1
 
+  - name: Hissa Barbara Oliveira
+    orcid: 0009-0002-4584-2693
+    email: hissa.barbara@discente.ufma.br
+    affiliations: 1
+
+  - name: Mateus Dutra Vale
+    orcid: 0009-0005-1301-879X
+    email: mateus.dv@discente.ufma.br
+    affiliations: 1
+
+  - name: Samylli Kalei Silva Zhao
+    orcid: 0009-0009-6490-4459
+    email: samylli.zhao@discente.ufma.br
+    affiliations: 1
+
 affiliations:
   - code:    1
     name:    LambdaGeo, Universidade Federal do Maranhão (UFMA)
@@ -41,7 +56,7 @@ replication:
  - url:  https://gmd.copernicus.org/articles/8/3215/2015/gmd-8-3215-2015.pdf
  - doi:  10.5194/gmd-8-3215-2015
 
-abstract: "Moulds, Buytaert and Mijic (2015) presented lulcc, an R package for land use change modelling, and demonstrated it on the Plum Island Ecosystems data set: logistic regression suitability, demand by interpolation, CLUE-S and ordered allocation, and validation by three-map comparison. We replicate that application in Python, on the DisSModel framework, with the CLUE-S allocation of DisSLUCC, which derives from LuccME and was written independently of lulcc. We compare at two levels. Given the same inputs, our CLUE-S and ordered allocations reproduce every one of lulcc's simulated maps cell by cell, and our validation tables agree to 1e-16. With independent random numbers, 30 runs of each implementation agree in distribution on all 20 metrics we compared, under criteria recorded before the runs. Running the original demonstration script on current R required one change: the data set's raster objects, serialised by an old version of the raster package, make the allocation stop with a CRS error and had to be rebuilt."
+abstract: "Moulds, Buytaert and Mijic (2015) presented lulcc, an R package for land use change modelling, and demonstrated it on the Plum Island Ecosystems data set: logistic regression suitability, demand by interpolation, CLUE-S and ordered allocation, and validation by three-map comparison. We replicate that application in Python, on the DisSModel framework, with the CLUE-S allocation of DisSLUCC, which derives from LuccME and was written independently of lulcc. We compare at two levels. Given the same inputs, the CLUE-S allocation of DisSLUCC and our ordered allocation reproduce every one of lulcc's simulated maps cell by cell, and our validation tables agree to 1e-16. With independent random numbers, 30 runs of each implementation agree in distribution on all 20 metrics we compared, under criteria recorded before the runs. Running the original demonstration script on current R required one change: the data set's raster objects, serialised by an old version of the raster package, make the allocation stop with a CRS error and had to be rebuilt."
 
 bibliography: bibliography.bib
 

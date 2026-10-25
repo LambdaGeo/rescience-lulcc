@@ -42,8 +42,8 @@ declared in the article):
 
 ## Result against the deterministic golden
 
-`make check GOLDENS=...` (24 Oct 2026, goldens from the smoke-test
-environment of lulcc-goldens, not yet the Docker release):
+`make check GOLDENS=...` against the goldens of lulcc-goldens v0.1.0 (Docker image,
+R 4.5.1):
 
 | Stage | Result |
 |---|---|
@@ -78,12 +78,10 @@ current R.
 
 ## Still to do
 
-1. ~~Regenerate the goldens in the Docker environment and rerun `make check`
-   and `make compare` against them~~ (done 25 Oct 2026: same results).
-2. rpart and random forest models of Fig. 5 (descriptive only).
-3. Figures side by side with the paper's.
-4. `requirements.lock`, registered run, ReScience article.
-5. Move `JitteredDClueS`, `ordered.py` and `threemap.py` into DisSLUCC.
+1. rpart and random forest models of Fig. 5 (descriptive only).
+2. Figures side by side with the paper's.
+3. Move `JitteredDClueS`, `ordered.py` and `threemap.py` into DisSLUCC (DisSLUCC 0.6.0,
+   then v0.2.0 of this repository).
 
 ## Audit
 
@@ -106,8 +104,8 @@ make check GOLDENS=../lulcc-goldens/goldens
 
 ## Licence
 
-Copyright (C) 2026 Sérgio Souza Costa, Denilson da Silva Bezerra and José Magno Pinheiro
-Alves (UFMA).
+Copyright (C) 2026 Sérgio Souza Costa, Denilson da Silva Bezerra, José Magno Pinheiro Alves,
+Hissa Barbara Oliveira, Mateus Dutra Vale and Samylli Kalei Silva Zhao (UFMA).
 
 This program is free software: you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software Foundation,

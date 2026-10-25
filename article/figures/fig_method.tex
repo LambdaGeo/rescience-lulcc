@@ -1,0 +1,74 @@
+% Figure 1 of the article: the replication and its comparison with lulcc.
+% Build: make figures/fig_method.pdf (from article/), or xelatex fig_method.tex here.
+\documentclass[border=2pt]{standalone}
+\usepackage{fontspec}
+\setmainfont{Roboto Condensed}[Path=../roboto/RobotoCondensed-, Extension=.ttf,
+  UprightFont=Regular, BoldFont=Bold, ItalicFont=Italic, BoldItalicFont=BoldItalic]
+\setmonofont{Roboto Condensed}[Path=../roboto/RobotoCondensed-, Extension=.ttf,
+  UprightFont=Italic, BoldFont=BoldItalic]
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc}
+\definecolor{ref}{HTML}{2F5D8A}
+\definecolor{rep}{HTML}{B5651D}
+\definecolor{ok}{HTML}{2E7D32}
+\definecolor{ink}{HTML}{333333}
+\hyphenpenalty=10000 \exhyphenpenalty=10000
+\newcommand\e[1]{10\textsuperscript{\,−#1}}
+\begin{document}
+\fontsize{7.6}{9}\selectfont
+\begin{tikzpicture}[
+  every node/.style={text=ink},
+  box/.style={draw, rounded corners=2pt, align=center, inner sep=3pt, line width=.5pt},
+  R/.style={box, draw=ref, fill=ref!7, text width=3.6cm, minimum height=10.5mm},
+  P/.style={box, draw=rep, fill=rep!7, text width=3.6cm, minimum height=10.5mm},
+  S/.style={align=center, text width=3.4cm},
+  arr/.style={-{Stealth[length=4pt]}, line width=.5pt, ink!60},
+  cmp/.style={{Stealth[length=3.5pt]}-{Stealth[length=3.5pt]}, line width=.5pt, ok, densely dotted},
+  feed/.style={-{Stealth[length=3.5pt]}, line width=.6pt, ref, dashed}]
+\def\xl{2.0} \def\xm{6.6} \def\xr{11.2}
+\def\rows{{-2.95,-4.35,-5.75,-7.15}}
+
+\node[box, text width=12.75cm, fill=ink!4, draw=ink!50] (data) at (\xm,0)
+  {\textbf{Moulds et al. (2015): Plum Island Ecosystems.} Land use 1985, 1991, 1999 (forest, built, other);
+   elevation, slope, distance to built land; the script \texttt{demo/gmd-paper.R}};
+
+\node[R, fill=ref!16, minimum height=9mm] (hR) at (\xl,-1.25) {\textbf{Reference: lulcc 1.0.4}\\ R 4.5.1, Docker image (digest)};
+\node[P, fill=rep!16, minimum height=9mm] (hP) at (\xr,-1.25) {\textbf{Replication: Python 3.12}\\ DisSModel 0.6.6, DisSLUCC 0.5.0};
+\node[S] at (\xm,-1.25) {\textbf{Stage}\\ \textcolor{ok}{result at the deterministic level}};
+
+\node[R] (r1) at (\xl,-2.95) {\texttt{glmModels}\\ logistic regression (R \texttt{glm})};
+\node[P] (p1) at (\xr,-2.95) {written for the replication\\ binomial GLM (statsmodels)};
+\node[S] (s1) at (\xm,-2.95) {\textbf{1 Suitability}\\ \textcolor{ok}{coefficients: relative difference ≤ 1.3 × \e{9}}};
+
+\node[R] (r2) at (\xl,-4.35) {\texttt{approxExtrapDemand}\\ demand rounded to whole cells};
+\node[P] (p2) at (\xr,-4.35) {port of lulcc's code\\ interpolation and rounding};
+\node[S] (s2) at (\xm,-4.35) {\textbf{2 Demand}\\ \textcolor{ok}{identical, t = 0–14}};
+
+\node[R] (r3) at (\xl,-5.75) {\texttt{CluesModel} (loop in C)\\ \texttt{OrderedModel}};
+\node[P] (p3) at (\xr,-5.75) {CLUE-S: DisSLUCC, unchanged\\ random perturbation and\\ ordered: ports of lulcc's code};
+\node[S] (s3) at (\xm,-5.75) {\textbf{3 Allocation}\\ CLUE-S and ordered\\ \textcolor{ok}{0 cells differ in 14 steps}};
+
+\node[R] (r4) at (\xl,-7.15) {\texttt{ThreeMapComparison}, \texttt{AgreementBudget}, \texttt{FigureOfMerit}};
+\node[P] (p4) at (\xr,-7.15) {port of lulcc's code\\ three-map comparison};
+\node[S] (s4) at (\xm,-7.15) {\textbf{4 Validation}, 8 resolutions\\ \textcolor{ok}{tables: difference ≤ 1.1 × \e{16}}};
+
+\draw[arr] (data.south -| hR) -- (hR); \draw[arr] (data.south -| hP) -- (hP);
+\draw[arr] (hR) -- (r1); \draw[arr] (hP) -- (p1);
+\foreach \i/\j in {1/2,2/3,3/4} {\draw[arr] (r\i) -- (r\j); \draw[arr] (p\i) -- (p\j);}
+\foreach \i in {1,...,4} {\draw[cmp] (r\i.east) -- (s\i.west); \draw[cmp] (s\i.east) -- (p\i.west);}
+\draw[feed] (r1.north east) .. controls +(1.3,.42) and +(-1.3,.42) .. node[pos=.5, fill=white, inner sep=1pt, text=ref, font=\scriptsize] {training cells} (p1.north west);
+
+\node[box, draw=ok, fill=ok!6, text width=6.15cm, align=left, minimum height=25.6mm, anchor=north west] (L1) at (\xl-1.8-.12,-7.95)
+  {\textbf{Deterministic level}: seed 1, no random perturbation. The replication takes
+   lulcc's training cells (and, to test the allocation alone, its probabilities and
+   demand); maps compared cell by cell.\\
+   \textit{Audit}: the CLUE-S that runs is DisSLUCC's; five negative controls
+   (elasticity, scale factor, tolerance, suitability, demand) make the maps differ.};
+\node[box, draw=ok, fill=ok!6, text width=6.15cm, align=left, minimum height=25.6mm, anchor=north east] (L2) at (\xr+1.8+.12,-7.95)
+  {\textbf{Ensemble level}: the published script, 30 seeds in each implementation,
+   independent random numbers; 20 metrics (AUC of the regressions; figure of merit
+   at 8 resolutions, CLUE-S and ordered).\\
+   Criteria fixed before the runs: means within 3 standard errors and KS p ≥ 0.01.
+   \textcolor{ok}{\textbf{20 of 20 pass.}}};
+\end{tikzpicture}
+\end{document}

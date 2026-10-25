@@ -1,4 +1,4 @@
-# Provisional pins; becomes requirements.lock (make lock) before the registered run.
+# Direct dependencies. The environment of the reported runs is requirements.lock.
 dissmodel==0.6.6
 disslucc==0.5.0
 numpy>=2.0
