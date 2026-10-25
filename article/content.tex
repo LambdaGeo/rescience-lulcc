@@ -1,15 +1,8 @@
 % ---------------------------------------------------------------------------
-% Two versions are built from this file (see Makefile):
-%   article.pdf       clean: no GUIA blocks, appendix replaced by a pointer
-%   article-full.pdf  full:  GUIA blocks (notes to the author) and appendix
+% Body of the article; built into article.pdf by `make` (see Makefile).
 % Structure follows published ReScience C replications: replication summary
 % first, then analysis of the original paper, set-up, implementation, results.
 % ---------------------------------------------------------------------------
-
-\guia{Draft v3, 25 Oct 2026. Reference regenerated in the Docker image of lulcc-goldens
-(R 4.5.1) and the comparison rerun on the first author's computer: same results as the
-draft. Still open: CPU of the OptiPlex 7050, Python versions from requirements.lock,
-Zenodo DOI of lulcc-goldens and image digest.}
 
 \section{Introduction}
 
@@ -26,10 +19,15 @@ We replicate that application in Python: a replication in the sense of
 \citet{NASEM:2019}, with new code and our own runs, rather than a reproduction with the
 original code. Both lulcc and the CLUE-S implementation we use were written from the
 published description of the algorithm \supercite{Verburg:2002}, independently of each
-other. Allocation procedures are known to leave room for different readings, with
-consequences for the simulated maps \supercite{Mazy:2023}; the comparison therefore
-tests two independent readings of the same description, with lulcc's own demonstration
-as the reference.
+other. Ours comes from LuccME \supercite{Aguiar:2012}, a land use change framework
+developed at INPE on the TerraME modelling platform \supercite{Carneiro:2013}, which
+organises a model into demand, potential and allocation components and has supported
+land use and emission scenarios for the Brazilian Amazon \supercite{Aguiar:2016} and
+for Brazil \supercite{Bezerra:2022}. The original article itself lists LuccME among
+the implementations of CLUE-S. Allocation procedures are known to leave room for
+different readings, with consequences for the simulated maps \supercite{Mazy:2023};
+the comparison therefore tests two independent readings of the same description, with
+lulcc's own demonstration as the reference.
 
 \section{Replication summary}
 
@@ -38,9 +36,10 @@ spatially explicit dynamic models, and its land use package DisSLUCC
 \supercite{DisSLUCC:2026}. The code is original. Its parts have three origins:
 \begin{itemize}
   \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged. It was
-    ported from LuccME \supercite{Aguiar:2012}, the land use extension of TerraME
-    \supercite{Carneiro:2013} developed at INPE, and not from lulcc; DisSLUCC is
-    verified against LuccME separately \supercite{DisSLUCCbenchmark:2026}.
+    ported from the discrete allocation of LuccME (\texttt{AllocationDClueSLike}), not
+    from lulcc. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
+    outputs of TerraME with the same number of iterations in every year and differences
+    of at most $1.2 \times 10^{-7}$ \supercite{DisSLUCCbenchmark:2026}.
   \item \emph{Written for this replication from the original article}: data reading,
     suitability, demand, the random perturbation of CLUE-S, the ordered allocation, and
     the three-map comparison with its agreement budget and figure of merit.
@@ -54,14 +53,6 @@ independent random numbers, 30 runs of each implementation agree in distribution
 20 metrics compared, under criteria recorded before the runs. Running the original
 demonstration script required one repair, unrelated to the model
 (Section~\ref{sec:obstacles}).
-
-\guia{Confirm that the DisSLUCC benchmark covers the discrete CLUE-S
-(AllocationDClueSLike); if it covers only the continuous allocation, rephrase the
-sentence on verification against LuccME.}
-
-\guia{Check with the editor whether the first author's past work at INPE on TerraME/LuccME
-(doctorate) needs to be declared. It is not a collaboration with the original
-authors, which is what the journal's rule excludes.}
 
 \section{The original model}
 
@@ -120,7 +111,9 @@ level of the algorithm. We followed lulcc's source code for them, so that a diff
 in the comparison would point at the algorithm rather than at a convention:
 \begin{itemize}
   \item demand rounding: rows rescaled to the number of cells, floored, and the
-    remaining cells given to the classes with the largest remainders;
+    remaining cells given to the classes with the largest remainders. LuccME rounds
+    differently, adding each year's increment to the previous year's rounded demand, so
+    this is a convention on which the two implementations differ;
   \item training sample: the class codes are numeric, so the stratification of
     \texttt{caret::}\allowbreak\texttt{createDataPartition}, which lulcc calls, groups
     them by quantile, which for this map gives two strata, \{forest, built\} and
@@ -185,10 +178,6 @@ last digits, and in 18 of the 480 figure-of-merit values of the ensemble this ch
 the result by at most $10^{-4}$, leaving every mean and standard deviation of
 Table~\ref{tab:ensemble} unchanged. The replication, run against either reference,
 gave the results reported here.
-
-\guia{Add the Zenodo DOI of lulcc-goldens and the Docker image digest once released;
-update software versions and times from the Docker run (measure without concurrent
-jobs).}
 
 \section{Implementation}
 
@@ -319,9 +308,6 @@ that for the gain of built (0.6448) at the 63rd and that for other (0.7276) at t
 The paper used lulcc 1.0 with the R of 2015; our reference used lulcc 1.0.4 on current
 R. We did not investigate the difference further.
 
-\guia{A visual comparison with the published Figs.~7--8 could be added (digitised curve
-or side-by-side panels).}
-
 \section{Obstacles}
 \label{sec:obstacles}
 
@@ -337,10 +323,6 @@ same grid, values and CRS solves it; this is the only change we made to the scri
 package written to make land use models reproducible thus needed a repair to run
 its own published example eleven years later, for a reason unrelated to the model.
 
-\guia{Tone of the last sentence: keep, soften, or drop. Consider writing to Simon Moulds
-before submission (courtesy; the CRS issue may interest him, and a fix to the data set
-would be simple).}
-
 \paragraph{An undeclared dependency.} lulcc loads the \texttt{gsubfn} package when it
 builds the explanatory variables, but lists it only as a suggestion; it has to be
 installed by hand.
@@ -349,7 +331,9 @@ installed by hand.
 
 The Plum Island Ecosystems application of lulcc was replicated. With the same inputs,
 an independent implementation of CLUE-S reproduces lulcc's maps exactly, and so do our
-ordered allocation and validation; with independent random numbers, the two
+ordered allocation and validation. The same component also reproduces the discrete
+labs of LuccME, so two implementations written independently from one published
+description agree with a third; with independent random numbers, the two
 implementations agree in distribution on every metric compared. The main obstacle was
 not in the model but in the environment around it.
 
@@ -361,10 +345,8 @@ With the reference downloaded, \texttt{make env}, \texttt{make check} (about one
 \texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
 Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:maps}
 and \ref{fig:fom} (\texttt{make maps} for the former). The
-software versions are fixed in the repository.
-
-\guia{Replace with the registered run: requirements.lock, Python version and machine;
-lulcc-goldens release and image digest.}
+versions of the Python packages are fixed in the file \texttt{requirements\allowbreak.lock}, and the R
+environment of the reference in the Dockerfile of lulcc-goldens.
 
 \section*{Declaration of generative AI use}
 
@@ -385,56 +367,12 @@ comparison on his own computer, with the same results; the authors reviewed the 
 the text and are responsible for all the content. The tool is not listed as an author.
 Commits made with it carry a Co-Authored-By line naming the model.
 
-\guia{Co-authors (Denilson da Silva Bezerra, José Magno Pinheiro Alves): state what
-each did, e.g. an independent run of the reference and the replication on another
-machine (as in the Open LUCC workflow), review of the text. If someone does such a run,
-report it in Section~\ref{sec:setup}: a second machine strengthens the replication.
-Fill their e-mails in metadata.yaml.}
-
-\guia{Check every claim of this statement before submission: add the dates of the later
-work; decide whether the acceptance criteria count as drafted by the model and approved
-by you (as written) or as yours; extend the run sentence if a co-author reruns it.}
-
 \section*{Acknowledgements}
 
-\guia{Funding (CNPq/FAPEMA?), if any; otherwise remove this section.}
+We thank the developers of TerraME and LuccME at INPE, whose open code is the origin of
+the CLUE-S implementation used here, and S. Moulds for making lulcc and its
+demonstration openly available.
 
-\ifguia
-\appendix
-\section{All 20 ensemble metrics}
-
-\begin{table}[h]
-\scriptsize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccccc}
-\toprule
-Metric & lulcc mean & sd & repl.\ mean & sd & diff. & tol. & KS $p$ \\
-\midrule
-AUC glm, forest & 0.6439 & 0.0007 & 0.6437 & 0.0006 & $-0.0003$ & 0.0005 & 0.07 \\
-AUC glm, built & 0.9382 & 0.0003 & 0.9382 & 0.0003 & $-0.0001$ & 0.0002 & 0.81 \\
-AUC glm, other & 0.7295 & 0.0010 & 0.7290 & 0.0008 & $-0.0004$ & 0.0007 & 0.14 \\
-AUC glm, gain of built & 0.6446 & 0.0004 & 0.6446 & 0.0004 & $0.0000$ & 0.0003 & 0.81 \\
-FoM CLUE-S, 2 & 0.1168 & 0.0017 & 0.1167 & 0.0019 & $-0.0001$ & 0.0014 & 0.81 \\
-FoM CLUE-S, 4 & 0.1880 & 0.0041 & 0.1876 & 0.0046 & $-0.0004$ & 0.0033 & 0.96 \\
-FoM CLUE-S, 8 & 0.2905 & 0.0055 & 0.2898 & 0.0061 & $-0.0006$ & 0.0045 & 0.96 \\
-FoM CLUE-S, 16 & 0.3766 & 0.0058 & 0.3756 & 0.0062 & $-0.0010$ & 0.0046 & 0.81 \\
-FoM CLUE-S, 32 & 0.4756 & 0.0077 & 0.4749 & 0.0080 & $-0.0007$ & 0.0061 & 0.96 \\
-FoM CLUE-S, 64 & 0.5767 & 0.0081 & 0.5754 & 0.0082 & $-0.0013$ & 0.0063 & 0.96 \\
-FoM CLUE-S, 128 & 0.7134 & 0.0116 & 0.7120 & 0.0123 & $-0.0014$ & 0.0093 & 0.81 \\
-FoM CLUE-S, 256 & 0.7684 & 0.0052 & 0.7688 & 0.0052 & $+0.0004$ & 0.0040 & 0.96 \\
-FoM ordered, 2 & 0.1079 & 0.0017 & 0.1079 & 0.0019 & $0.0000$ & 0.0014 & 1.00 \\
-FoM ordered, 4 & 0.1890 & 0.0052 & 0.1884 & 0.0058 & $-0.0006$ & 0.0043 & 1.00 \\
-FoM ordered, 8 & 0.3103 & 0.0115 & 0.3097 & 0.0129 & $-0.0005$ & 0.0095 & 0.96 \\
-FoM ordered, 16 & 0.4311 & 0.0188 & 0.4308 & 0.0199 & $-0.0003$ & 0.0150 & 0.96 \\
-FoM ordered, 32 & 0.5539 & 0.0265 & 0.5523 & 0.0280 & $-0.0016$ & 0.0211 & 1.00 \\
-FoM ordered, 64 & 0.6265 & 0.0307 & 0.6248 & 0.0305 & $-0.0017$ & 0.0237 & 1.00 \\
-FoM ordered, 128 & 0.6683 & 0.0393 & 0.6664 & 0.0397 & $-0.0019$ & 0.0306 & 1.00 \\
-FoM ordered, 256 & 0.6795 & 0.0326 & 0.6784 & 0.0327 & $-0.0011$ & 0.0253 & 1.00 \\
-\bottomrule
-\end{tabular}
-\caption{Ensemble level, all metrics (30 runs each). All passed.}
-\end{table}
-\else
 \noindent\emph{Complete table of the 20 ensemble metrics: see
 \texttt{results/ensemble\_comparison.csv} in the code repository.}
-\fi
+
