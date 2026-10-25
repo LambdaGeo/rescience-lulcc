@@ -41,3 +41,39 @@ def test_identical_maps_give_perfect_figure_of_merit():
     for tab in tabs:
         fom = threemap.figure_of_merit(tab, 3)
         assert np.isclose(fom["overall"], 1.0)
+
+
+def test_jitter_subclass_at_zero_equals_published_component():
+    """JitteredDClueS replaces the iteration loop of DisSLUCC's AllocationDClueSLike to add
+    the perturbation; with perturbation 0 it must give exactly the published result."""
+    from disslucc.components.allocation import AllocationDClueSLike
+    from disslucc.components.demand import DemandPreComputedValues
+    from dissmodel.core import Environment
+    from dissmodel.geo import RasterBackend
+
+    from re_lulcc import clues
+    from re_lulcc.data import LABELS
+
+    rng = np.random.default_rng(3)
+    shape = (40, 50)
+    lu0 = rng.integers(0, 3, size=shape)
+    prob = {lab: rng.uniform(size=shape) for lab in LABELS}
+    totals = np.array([(lu0 == k).sum() for k in range(3)])
+    demand = [totals.tolist(), (totals + [-60, 80, -20]).tolist(), (totals + [-120, 150, -30]).tolist()]
+
+    def run(cls, **kw):
+        b = RasterBackend(shape=shape)
+        for k, lab in enumerate(LABELS):
+            b.set(lab, (lu0 == k).astype(np.float32))
+        env = Environment(start_time=1, end_time=2)
+        dem = DemandPreComputedValues(annual_demand=[list(map(float, r)) for r in demand], land_use_types=LABELS)
+        clues.ProbabilityPotential(backend=b, probability=prob, elasticity={lab: 0.2 for lab in LABELS})
+        cls(backend=b, demand=dem, land_use_types=LABELS, transition_matrix=[[[1, 1, 1]] * 3], cell_area=1.0,
+            max_difference=10, max_iteration=5000, factor_iteration=1e-4, **kw)
+        env.run()
+        return np.stack([b.get(lab) for lab in LABELS])
+
+    published = run(AllocationDClueSLike)
+    ours = run(clues.JitteredDClueS, jitter=0.0, rng=np.random.default_rng(1))
+    assert np.array_equal(published, ours)
+    assert not np.array_equal(published[:, :, :], np.stack([(lu0 == k) for k in range(3)]).astype(np.float32))

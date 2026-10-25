@@ -85,6 +85,17 @@ current R.
 4. `requirements.lock`, registered run, ReScience article.
 5. Move `JitteredDClueS`, `ordered.py` and `threemap.py` into DisSLUCC.
 
+## Audit
+
+`make audit` (about 3 minutes) checks that the comparison is what it claims: the
+CLUE-S that runs is DisSLUCC's published component, called once per step; only
+suitability and demand are read from the reference; lulcc's maps change at every step
+and ours match at the same step only; the perturbation subclass with perturbation 0
+equals the published component; DisSLUCC's own logistic potential also reproduces
+lulcc; and five negative controls (elasticity, scale factor, tolerance, noise on the
+suitability, demand) make the maps differ. `make audit-power` adds the ensemble
+negative control (about 15 minutes more). Results in `results/audit.json`.
+
 ## Use
 
 ```bash

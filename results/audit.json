@@ -1,0 +1,61 @@
+{
+  "disslucc": {
+    "version": null,
+    "file": "/tmp/claude-0/venv/lib/python3.13/site-packages/disslucc/components/allocation/clue_s.py"
+  },
+  "checks": {
+    "provenance: AllocationDClueSLike comes from the installed disslucc package": true,
+    "provenance: published execute() called once per step (14)": true,
+    "change: lulcc's map changes at every step": true,
+    "alignment: identical at the same step": true,
+    "alignment: different from the previous step": true,
+    "zero-jitter: JitteredDClueS(jitter=0) reproduces lulcc": true,
+    "disslucc: PotentialDLogisticRegression + AllocationDClueSLike reproduce lulcc": true,
+    "control detected: elasticity 0.2 -> 0.25": true,
+    "control detected: scale factor 1e-6 -> 2e-6": true,
+    "control detected: max difference 50 -> 10": true,
+    "control detected: probabilities + N(0, 1e-4)": true,
+    "control detected: demand +100 built, -100 forest": true
+  },
+  "published_execute_calls": 14,
+  "lulcc_cells_changed_per_step": [
+    12733,
+    583,
+    585,
+    591,
+    589,
+    594,
+    454,
+    436,
+    454,
+    441,
+    454,
+    449,
+    438,
+    440
+  ],
+  "differing_same_step": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "negative_controls_final_cells_differing": {
+    "elasticity 0.2 -> 0.25": 4555,
+    "scale factor 1e-6 -> 2e-6": 6,
+    "max difference 50 -> 10": 45,
+    "probabilities + N(0, 1e-4)": 14,
+    "demand +100 built, -100 forest": 130
+  }
+}

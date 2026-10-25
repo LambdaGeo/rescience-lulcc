@@ -35,20 +35,26 @@ The replication runs on DisSModel \supercite{DisSModel:2026}, a Python framework
 spatially explicit dynamic models, and its land use package DisSLUCC
 \supercite{DisSLUCC:2026}. The code is original. Its parts have three origins:
 \begin{itemize}
-  \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged. It was
-    ported from the discrete allocation of LuccME (\texttt{AllocationDClueSLike}), not
-    from lulcc. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
+  \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged at
+    the deterministic level. It was ported, before and independently of this work, from
+    the discrete allocation of LuccME, \texttt{AllocationD\-ClueS\-Like}, and not from
+    lulcc. To add the random perturbation, a subclass replaces its iteration loop; with
+    the perturbation set to zero it gives the same maps as the published component. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
     outputs of TerraME with the same number of iterations in every year and differences
     of at most $1.2 \times 10^{-7}$ \supercite{DisSLUCCbenchmark:2026}.
-  \item \emph{Written for this replication from the original article}: data reading,
-    suitability, demand, the random perturbation of CLUE-S, the ordered allocation, and
-    the three-map comparison with its agreement budget and figure of merit.
-  \item \emph{Conventions taken from lulcc's source code}: where the article leaves a
-    choice open, we read the source and followed it (Section~\ref{sec:analysis}). No
-    lulcc code was translated or reused.
+  \item \emph{Written for this replication}: data reading, suitability, demand, the
+    random perturbation of CLUE-S, the ordered allocation, and the three-map comparison
+    with its agreement budget and figure of merit. They follow the original article, and
+    where it leaves a choice open they follow lulcc's source code
+    (Section~\ref{sec:analysis}). For the ordered allocation, the three-map comparison,
+    the demand rounding and the training sample this means that our code follows
+    lulcc's procedure step by step, in Python; their agreement with lulcc verifies these
+    ports, not an independent reading. Only the CLUE-S allocation and the logistic
+    regression were written without reference to lulcc's code.
 \end{itemize}
-Given the same inputs, our CLUE-S and ordered allocations reproduce every simulated
-map of lulcc cell by cell, and our validation tables agree to $10^{-16}$. With
+Given the same inputs, the CLUE-S allocation of DisSLUCC reproduces every simulated map
+of lulcc cell by cell, and so do our ports of the ordered allocation and of the
+validation tables (to $10^{-16}$). With
 independent random numbers, 30 runs of each implementation agree in distribution on all
 20 metrics compared, under criteria recorded before the runs. Running the original
 demonstration script required one repair, unrelated to the model
@@ -132,6 +138,10 @@ stopping condition based on the mean signed difference between demand and alloca
 because the rounded demand sums to the number of cells, that mean is zero, and only the
 largest difference stops the iteration.
 
+\paragraph{Iterations not reported.} lulcc does not report the number of iterations of
+CLUE-S at each step, so only the map produced at each step can be compared, not the path
+of the iteration. Against LuccME the iteration counts are compared and agree.
+
 \paragraph{Results shown only as figures.} The AUCs are printed in the figures, but the
 agreement budgets and figures of merit are only drawn (Figs.~7--8). We compare the
 latter with our own runs of lulcc, not with the published curves.
@@ -186,8 +196,9 @@ Mann--Whitney statistic, with ties counted as one half. CLUE-S is the allocation
 component of DisSLUCC (\texttt{AllocationDClue\-SLike}) on a DisSModel raster backend;
 the simulation starts at time 1, as lulcc does, and the suitability with elasticity is
 supplied to it in double precision. The random perturbation is added by a subclass of
-the DisSLUCC component that draws a new uniform number for every cell and class at
-every iteration. The ordered allocation and the three-map comparison are separate
+the DisSLUCC component that replaces its iteration loop and draws a new uniform number
+for every cell and class at every iteration; a test in the repository checks that, with
+the perturbation set to zero, it gives the same result as the published component. The ordered allocation and the three-map comparison are separate
 modules, operating on the valid cells in the raster's row-major order, which is also
 lulcc's cell order.
 
@@ -221,7 +232,19 @@ given lulcc's suitability and demand, produced the same map as lulcc at each of 
 last. The ordered allocation also matched at every step, and the three-map tables and
 figures of merit agreed to rounding error. Running the whole chain from our own
 regression gave the same final map: the coefficients differ by about $10^{-9}$ in
-relative terms, which did not change any allocation.
+relative terms, which did not change any allocation. The same holds when the suitability
+is computed by DisSLUCC's own logistic potential, in single precision, from lulcc's
+coefficients, so the whole chain of DisSLUCC reproduces lulcc.
+
+The agreement is not an artefact of the comparison. The CLUE-S that runs is the
+component of the installed package, called once per step; from the reference only the
+suitability and the demand are read, never a simulated map; lulcc's map changes at every
+step (12\,733 cells at the first, 440 to 590 at the others), and ours matches the same
+step and not the neighbouring ones. The comparison also fails when it should: changing
+one thing at a time makes the final maps differ, by 4\,555 cells for an elasticity of
+0.25 instead of 0.2, 130 for a demand shifted by 100 cells, 45 for a tolerance of 10
+cells instead of 50, 14 for noise of $10^{-4}$ added to the suitability and 6 for a
+scale factor doubled. These checks are in \texttt{scripts/audit.py}.
 
 \begin{table}[h]
 \footnotesize
@@ -239,6 +262,8 @@ Ordered allocation, 14 steps & 0 cells differ at every step \\
 Three-map tables, 8 resolutions, both methods & max.\ difference $1.1 \times 10^{-16}$ \\
 Figure of merit forest $\to$ built & max.\ difference $2.2 \times 10^{-16}$ \\
 Whole chain from our own regression & final map identical \\
+DisSLUCC's own logistic potential (single precision) & 0 cells differ at every step \\
+Perturbation subclass with perturbation 0 & 0 cells differ at every step \\
 \bottomrule
 \end{tabular}
 \caption{Deterministic level: each stage fed with the reference's inputs.}
@@ -264,6 +289,13 @@ All 20 metrics passed. Table~\ref{tab:ensemble} shows a selection and
 Figure~\ref{fig:fom} the figure of merit at every resolution; the spread between runs
 is the same in both implementations, including the larger spread of the stochastic
 ordered allocation.
+
+The criteria detect a wrong model but not every wrong detail. With an elasticity of
+0.25, ten runs of the replication fail seven of the eight figure-of-merit metrics of
+CLUE-S; without any perturbation they fail none. Most of the spread between runs comes
+from the training sample, and the perturbation changes only a few cells (19 in the
+final map of one run), so the ensemble level confirms the distribution of the results,
+not the implementation of the perturbation.
 
 \begin{table}[h]
 \footnotesize
@@ -332,9 +364,9 @@ installed by hand.
 The Plum Island Ecosystems application of lulcc was replicated. With the same inputs,
 an independent implementation of CLUE-S reproduces lulcc's maps exactly, and so do our
 ordered allocation and validation. The same component also reproduces the discrete
-labs of LuccME, so two implementations written independently from one published
-description agree with a third; with independent random numbers, the two
-implementations agree in distribution on every metric compared. The main obstacle was
+labs of LuccME: lulcc and LuccME, written independently from the same published
+description, are reproduced by one implementation. With independent random numbers, the
+two implementations agree in distribution on every metric compared. The main obstacle was
 not in the model but in the environment around it.
 
 \section*{Reproducing this replication}
