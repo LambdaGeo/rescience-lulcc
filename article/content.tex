@@ -271,15 +271,19 @@ Perturbation subclass with perturbation 0 & 0 cells differ at every step \\
 \end{table}
 
 Figure~\ref{fig:maps} shows the observed maps and the 1999 maps simulated by CLUE-S in
-both implementations, which the original article does not show. The two simulated maps
-are the same map. Both are visibly more clustered than the observed 1999 map; whatever its
+both implementations, which the original article does not show: it reports the
+simulations only through the agreement budget and the figure of merit. The
+replication's map comes from its whole chain, with its own regression and demand; only
+the training cells are taken from the reference. The two simulated maps are the same
+map. Both are visibly more clustered than the observed 1999 map; whatever its
 cause, it lies in the model and its set-up, which the two implementations share.
 
 \begin{figure}[h]
 \includegraphics[width=\linewidth]{figures/fig_maps.png}
-\caption{Land use observed in 1985 and 1999, and simulated for 1999 by CLUE-S at the
-deterministic level, by lulcc and by the replication (0 cells differ). Colours as in
-Fig.~3 of the original article.}
+\caption{Land use observed in 1985 and 1999, and simulated for 1999 by CLUE-S without
+perturbation, by lulcc and by the replication (its own regression, demand and DisSLUCC's
+allocation; training cells of the reference). 0 cells differ between the two simulated
+maps. Colours as in Fig.~3 of the original article.}
 \label{fig:maps}
 \end{figure}
 
