@@ -1,10 +1,10 @@
 {
   "1_data_crosstab_identical": true,
-  "2_glm_max_rel_diff": 1.344804003828288e-09,
-  "3_prob_from_R_coefs_max_abs_diff": 9.241204463740531e-14,
-  "3_prob_from_our_coefs_max_abs_diff": 2.79198553165827e-10,
+  "2_glm_max_rel_diff": 1.3447996851065484e-09,
+  "3_prob_from_R_coefs_max_abs_diff": 9.241204463740037e-14,
+  "3_prob_from_our_coefs_max_abs_diff": 2.7919899725503683e-10,
   "4_demand_identical": true,
-  "5_clues_seconds": 17.6,
+  "5_clues_seconds": 21.0,
   "5_clues_cells_differing_per_step": [
     0,
     0,
