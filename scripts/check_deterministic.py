@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Compare the replication with the deterministic golden of lulcc-goldens, stage by stage.
 
 Usage: python scripts/check_deterministic.py GOLDENS_DIR [--out results/deterministic.json]

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """One run of the paper's experiment with our own randomness (one seed).
 
 Mirrors demo/gmd-paper.R: 10% stratified training partition of the 1985

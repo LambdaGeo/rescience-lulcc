@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Apply acceptance.toml to the two ensembles and draw the comparison figure.
 
 Usage: python scripts/compare_ensemble.py R_ENSEMBLE_DIR PY_CSV [--outdir results]

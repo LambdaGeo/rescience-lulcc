@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Ordered allocation (Sect. 3.5.3 of the paper; Fuchs et al., 2013).
 
 Classes are visited in a fixed order (here built, forest, other). For a class

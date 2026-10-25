@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Plum Island Ecosystems data, read from the GeoTIFFs exported by lulcc-goldens.
 
 Cell order is row-major (C order), the same order as raster's cell numbers,

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Map figure for the article: observed 1985 and 1999, and the 1999 maps simulated
 by lulcc and by the replication (CLUE-S, deterministic level).
 

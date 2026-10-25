@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Demand by linear interpolation between observed maps (Sect. 3.4 of the paper).
 
 lulcc's approxExtrapDemand() interpolates (or extrapolates) the number of

@@ -104,4 +104,18 @@ make test
 make check GOLDENS=../lulcc-goldens/goldens
 ```
 
-Licence: MIT.
+## Licence
+
+Copyright (C) 2026 Sérgio Souza Costa, Denilson da Silva Bezerra and José Magno Pinheiro
+Alves (UFMA).
+
+This program is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version. It is
+distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; see `LICENSE`.
+
+GPL-3.0-or-later, the licence family of lulcc (GPL), because parts of this code (the
+ordered allocation, the three-map comparison, the demand rounding and the training
+sample) follow lulcc's source code step by step. Dependencies keep their own licences
+(DisSModel and DisSLUCC 0.5.0: MIT). The article itself is published under CC BY 4.0
+by ReScience C.

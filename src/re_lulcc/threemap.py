@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Three-map comparison at multiple resolutions (Pontius et al., 2011).
 
 Compares the initial reference map (x), the final reference map (x1) and the

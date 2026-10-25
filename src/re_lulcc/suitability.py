@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Binary logistic regression per class (Sect. 3.3 of the paper).
 
 One model per class, fitted on the training cells of the 1985 map:

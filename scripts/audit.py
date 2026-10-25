@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Audit of the deterministic comparison: is the comparison what it claims to be?
 
 Usage: python scripts/audit.py GOLDENS_DIR [--out results/audit.json] [--power]

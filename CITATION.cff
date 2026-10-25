@@ -15,7 +15,7 @@ authors:
     given-names: José Magno Pinheiro
     affiliation: Universidade Federal do Maranhão (UFMA)
     orcid: "https://orcid.org/0009-0003-7212-4870"
-license: MIT
+license: GPL-3.0-or-later
 version: 0.1.0-dev
 repository-code: "https://github.com/LambdaGeo/rescience-lulcc"
 keywords:

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """CLUE-S on DisSModel/DisSLUCC (Sect. 3.5.2 of the paper).
 
 The allocation is DisSLUCC's AllocationDClueSLike, unchanged: each cell goes

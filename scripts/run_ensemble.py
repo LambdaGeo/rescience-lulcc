@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Run the replication over seeds and write results/ensemble_python.csv.
 
 Usage: python scripts/run_ensemble.py DATA_DIR [--seeds 30] [--first 1] [--out results/ensemble_python.csv]
