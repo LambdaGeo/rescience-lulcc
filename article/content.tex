@@ -62,8 +62,9 @@ replication is original, and its parts have three origins, shown in the right-ha
 \caption{The replication and its comparison with lulcc. Left: the reference, lulcc's
 functions in the demonstration script. Right: the replication and the origin of each
 part. Centre: the four stages of the original model and, in green, the result of the
-deterministic comparison at each stage (Table~\ref{tab:deterministic}). The dashed arrow
-is the only input that the replication's own chain takes from the reference. Bottom:
+deterministic comparison at each stage (Table~\ref{tab:deterministic}). The dashed arrow,
+the cells drawn by R for the training sample of the regression, is the only input that the
+replication's own chain takes from the reference; the demand it computes itself. Bottom:
 the two levels of comparison (Section~\ref{sec:comparison}).}
 \label{fig:method}
 \end{figure}
@@ -239,7 +240,8 @@ parameters of DisSLUCC were translated from lulcc's, not tuned: the scale factor
 \texttt{factor\_iteration}, the tolerance as \texttt{max\_difference}, a cell area of 1 so
 that demand is counted in cells, and a transition matrix of ones, the rule matrix of the
 demonstration script. The two differ only where this application never goes: at the
-iteration limit DisSLUCC stops with an error, lulcc returns the last map with a warning.
+iteration limit DisSLUCC stops with an error, lulcc returns the last map with a warning,
+and so does the perturbation subclass of the ensemble; the limit was never reached.
 
 \section{Comparison and acceptance criteria}
 \label{sec:comparison}

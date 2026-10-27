@@ -102,6 +102,21 @@ make test
 make check GOLDENS=../lulcc-goldens/goldens
 ```
 
+## Building the article
+
+The article is in `article/` (ReScience C template, XeLaTeX and biber). On Ubuntu or
+Debian:
+
+```bash
+sudo apt install make latexmk texlive-xetex texlive-latex-extra \
+    texlive-fonts-recommended texlive-bibtex-extra biber python3-yaml
+sudo locale-gen en_US.UTF-8
+cd article && make
+```
+
+`make` also rebuilds Fig. 1 (`article/figures/fig_method.tex`, TikZ) when its source
+changes. After installing missing packages, run `make clean` before `make`.
+
 ## Licence
 
 Copyright (C) 2026 Sérgio Souza Costa, Denilson da Silva Bezerra, José Magno Pinheiro Alves,

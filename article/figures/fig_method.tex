@@ -56,11 +56,11 @@
 \draw[arr] (hR) -- (r1); \draw[arr] (hP) -- (p1);
 \foreach \i/\j in {1/2,2/3,3/4} {\draw[arr] (r\i) -- (r\j); \draw[arr] (p\i) -- (p\j);}
 \foreach \i in {1,...,4} {\draw[cmp] (r\i.east) -- (s\i.west); \draw[cmp] (s\i.east) -- (p\i.west);}
-\draw[feed] (r1.north east) .. controls +(1.3,.42) and +(-1.3,.42) .. node[pos=.5, fill=white, inner sep=1pt, text=ref, font=\scriptsize] {training cells} (p1.north west);
+\draw[feed] (r1.north east) .. controls +(1.3,.42) and +(-1.3,.42) .. node[pos=.5, fill=white, inner sep=1pt, text=ref, font=\scriptsize] {10\% training sample (cell indices)} (p1.north west);
 
 \node[box, draw=ok, fill=ok!6, text width=6.15cm, align=left, minimum height=25.6mm, anchor=north west] (L1) at (\xl-1.8-.12,-7.95)
   {\textbf{Deterministic level}: seed 1, no random perturbation. The replication takes
-   lulcc's training cells (and, to test the allocation alone, its probabilities and
+   lulcc's 10\% training sample (and, to test the allocation alone, its probabilities and
    demand); maps compared cell by cell.\\
    \textit{Audit}: the CLUE-S that runs is DisSLUCC's; five negative controls
    (elasticity, scale factor, tolerance, suitability, demand) make the maps differ.};
