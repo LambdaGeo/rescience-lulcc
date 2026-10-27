@@ -1,4 +1,4 @@
-# rescience-lulcc (provisional)
+# rescience-lulcc
 
 Replication, on DisSModel and DisSLUCC, of
 
@@ -12,25 +12,31 @@ replication only; the reference outputs come from
 [lulcc-goldens](https://github.com/LambdaGeo/lulcc-goldens), generated with
 the original R package.
 
-**Status:** provisional. DisSLUCC 0.5.0 is used as published; the pieces it
-lacks live in `src/re_lulcc/` and are meant to move into DisSLUCC later.
+**Status:** v0.1.0, the version described in the article (`article/article.pdf`).
+DisSLUCC 0.5.0 is used as published; the pieces it lacks live in `src/re_lulcc/` and
+are planned for DisSLUCC 0.6.0 (then v0.2.0 of this repository).
 
 ## What is where
 
-| Module | Paper | Source |
+Origins as in Fig. 1 and Section 2 of the article: *DisSLUCC* (used unchanged),
+*written* for the replication without reference to lulcc's code, or *port* of lulcc's
+code (followed step by step where the paper leaves a choice open).
+
+| Module | Paper | Origin |
 |---|---|---|
-| `data.py` | Sect. 3.1–3.2, data and transition tables | new |
-| `suitability.py` | Sect. 3.3, binary logistic regression (statsmodels) | new |
-| `demand.py` | Sect. 3.4, linear interpolation and rounding | new; rounding resolved against lulcc's `roundSum` |
-| `clues.py` | Sect. 3.5.2, CLUE-S | **allocation: DisSLUCC 0.5.0 `AllocationDClueSLike`, unchanged**; provisional: `ProbabilityPotential` (probability + elasticity) and `JitteredDClueS` (jitter, warn at the iteration limit) |
-| `ordered.py` | Sect. 3.5.3, ordered allocation (Fuchs et al., 2013) | provisional, see below |
-| `threemap.py` | Sect. 3.6, three-map comparison, agreement budget, figure of merit (Pontius et al., 2011) | provisional, see below |
+| `data.py` | Sect. 3.1–3.2, data and transition tables | written |
+| `suitability.py` | Sect. 3.3, binary logistic regression (statsmodels) | written |
+| `demand.py` | Sect. 3.4, linear interpolation and rounding | interpolation written; rounding a port of `roundSum` |
+| `clues.py` | Sect. 3.5.2, CLUE-S | **allocation: DisSLUCC 0.5.0 `AllocationDClueSLike`, unchanged**; `ProbabilityPotential` (probability + elasticity) written; `JitteredDClueS` (random perturbation, warn at the iteration limit) a port |
+| `ordered.py` | Sect. 3.5.3, ordered allocation (Fuchs et al., 2013) | port |
+| `threemap.py` | Sect. 3.6, three-map comparison, agreement budget, figure of merit (Pontius et al., 2011) | port |
+| `ensemble.py` | one run of the paper's experiment per seed | AUC written; training sample a port of `caret::createDataPartition` |
 
 DisSLUCC's CLUE-S came from LuccME (INPE), not from lulcc. The two
 implementations were written independently from Verburg et al. (2002).
 
-Points the paper leaves open, resolved by reading lulcc's source (to be
-declared in the article):
+Points the paper leaves open, resolved by reading lulcc's source (Section 4 of the
+article):
 - **Ordered allocation:** which cells are candidates, the temporary class
   (-1) for released cells, the cap of 1000 random draws, ties kept in cell
   order.
@@ -84,8 +90,7 @@ current R.
 ## Still to do
 
 1. rpart and random forest models of Fig. 5 (descriptive only).
-2. Figures side by side with the paper's.
-3. Move `JitteredDClueS`, `ordered.py` and `threemap.py` into DisSLUCC (DisSLUCC 0.6.0,
+2. Move `JitteredDClueS`, `ordered.py` and `threemap.py` into DisSLUCC (DisSLUCC 0.6.0,
    then v0.2.0 of this repository).
 
 ## Audit
@@ -101,10 +106,18 @@ negative control (about 15 minutes more). Results in `results/audit.json`.
 
 ## Use
 
+With [lulcc-goldens](https://github.com/LambdaGeo/lulcc-goldens) cloned next to this
+repository (otherwise pass `GOLDENS=path/to/lulcc-goldens/goldens`):
+
 ```bash
-make env
-make test
-make check GOLDENS=../lulcc-goldens/goldens
+make env        # .venv with the pinned packages (requirements.lock)
+make test       # unit tests, seconds
+make check      # deterministic level, Table 1 (~1 min)
+make audit      # checks of the comparison, Section 8.1 (~3 min)
+make maps       # Fig. 2
+make ensemble   # 30 runs of the replication (~15 min)
+make compare    # acceptance criteria, Table 2, Figs. 3 and 4
+make figures    # copy the figures of results/ into article/figures/
 ```
 
 ## Building the article
@@ -119,8 +132,12 @@ sudo locale-gen en_US.UTF-8
 cd article && make
 ```
 
-`make` also rebuilds Fig. 1 (`article/figures/fig_method.tex`, TikZ) when its source
-changes. After installing missing packages, run `make clean` before `make`.
+Build it outside the replication's virtual environment (`deactivate` first): the
+template's `yaml-to-latex.py` needs PyYAML, which the system package `python3-yaml`
+provides and `.venv` does not. `make` also rebuilds Fig. 1
+(`article/figures/fig_method.tex`, TikZ) when its source changes; Figs. 2–4 come from
+`results/` through `make figures`. After installing missing packages, run `make clean`
+before `make`.
 
 ## Licence
 
