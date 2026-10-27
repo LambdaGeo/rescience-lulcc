@@ -79,7 +79,84 @@ def main() -> int:
     print(res[cols].to_string(index=False, float_format=lambda v: f"{v:.4f}"))
     print(json.dumps(summary, indent=2))
     _figure(R, P, args.outdir / "fig_fom_forest_built.png")
+    if any(c.startswith("ab_") for c in P.columns):
+        _agreement(args.r_dir, P, args.outdir)
     return 0
+
+
+AB = {"a": "change simulated as persistence", "b": "change simulated correctly",
+      "c": "change simulated incorrectly", "d": "persistence simulated as change"}
+FACTORS = [2 ** k for k in range(1, 9)]
+
+
+def r_agreement(d: Path) -> pd.DataFrame:
+    """Agreement budget of forest -> built of every seed of lulcc, one row per seed."""
+    rows = []
+    for sd in sorted(d.glob("seed_*")):
+        row = {"seed": int(sd.name.split("_")[1])}
+        for model in ("clues", "ordered"):
+            ab = pd.read_csv(sd / f"{model}_agreement.csv")
+            ab = ab[(ab.level == "transition") & (ab.name == "Forest-Built")]
+            for _, r in ab.iterrows():
+                for k in AB:
+                    row[f"ab_forest_built_{model}_{int(r.factor)}_{k}"] = r[k]
+        rows.append(row)
+    return pd.DataFrame(rows).set_index("seed")
+
+
+def _agreement(r_dir: Path, P: pd.DataFrame, outdir: Path) -> None:
+    """Descriptive comparison of the agreement budget (Fig. 7 of the paper).
+
+    Not part of the acceptance criteria, which were fixed before the runs for the 20
+    metrics above; the same statistics are reported for information only.
+    """
+    R = r_agreement(r_dir)
+    rows = []
+    for m in [c for c in R.columns if c in P.columns]:
+        r, p = R[m].to_numpy(), P[m].to_numpy()
+        se = np.sqrt(r.var(ddof=1) / len(r) + p.var(ddof=1) / len(p))
+        rows.append({"metric": m, "mean_R": r.mean(), "sd_R": r.std(ddof=1),
+                     "mean_py": p.mean(), "sd_py": p.std(ddof=1), "diff": p.mean() - r.mean(),
+                     "diff_in_se": (p.mean() - r.mean()) / se if se > 0 else 0.0,
+                     "ks_p": ks_2samp(r, p).pvalue})
+    res = pd.DataFrame(rows)
+    res.to_csv(outdir / "agreement_comparison.csv", index=False)
+    print(f"agreement budget (descriptive): {len(res)} values, "
+          f"max |diff| {res['diff'].abs().max():.2e} of the study area, "
+          f"max |diff|/SE {res['diff_in_se'].abs().max():.2f}, min KS p {res['ks_p'].min():.3f}")
+    _agreement_figure(R, P, outdir / "fig_agreement_forest_built.png")
+
+
+def _agreement_figure(R: pd.DataFrame, P: pd.DataFrame, path: Path) -> None:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+
+    colors = {"a": "#d1495b", "b": "#66a182", "c": "#edae49", "d": "#00798c"}
+    x = np.arange(len(FACTORS))
+    w = 0.38
+    fig, axes = plt.subplots(1, 2, figsize=(8, 3.6), sharey=True)
+    for ax, model, title in zip(axes, ("clues", "ordered"), ("CLUE-S", "Ordered")):
+        for off, df, hatch in ((-w / 2 - 0.01, R, None), (w / 2 + 0.01, P, "////")):
+            bottom = np.zeros(len(FACTORS))
+            for k in ("b", "a", "c", "d"):
+                v = 100 * df[[f"ab_forest_built_{model}_{f}_{k}" for f in FACTORS]].mean().to_numpy()
+                ax.bar(x + off, v, w, bottom=bottom, color=colors[k], hatch=hatch,
+                       edgecolor="white", lw=0.4)
+                bottom += v
+        ax.set_xticks(x, [str(f) for f in FACTORS])
+        ax.set_title(title)
+        ax.set_xlabel("Resolution (multiple of native pixel size)")
+        ax.grid(axis="y", alpha=0.3)
+        ax.set_axisbelow(True)
+    axes[0].set_ylabel("Percentage of study area")
+    handles = [Patch(color=colors[k], label=AB[k]) for k in ("b", "a", "c", "d")]
+    handles += [Patch(facecolor="white", edgecolor="0.3", label="left bar: lulcc (R)"),
+                Patch(facecolor="white", edgecolor="0.3", hatch="////", label="right bar: replication")]
+    fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=7, frameon=False)
+    fig.tight_layout(rect=(0, 0.13, 1, 1))
+    fig.savefig(path, dpi=200)
 
 
 def _figure(R: pd.DataFrame, P: pd.DataFrame, path: Path) -> None:

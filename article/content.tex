@@ -77,11 +77,10 @@ because R's random sample cannot be drawn again in Python. At the \emph{ensemble
 both sides run the published script, with its randomness, using independent random
 numbers, and are compared in distribution.
 
-Three parts of the original application are not replicated: the regression trees and
+Two parts of the original application are not replicated: the regression trees and
 random forests of the paper's Fig.~5, since we did not reimplement R's rpart and
-randomForest; the agreement budget at the ensemble level, which is compared only at the
-deterministic level; and the published curves of Figs.~7--8, whose values the paper does
-not give.
+randomForest, and the published curves of Figs.~7--8, whose values the paper does not
+give; we compare those figures with our own runs of lulcc instead.
 
 Given the same inputs, the CLUE-S allocation of DisSLUCC reproduces every simulated map
 of lulcc cell by cell, and so do our ports of the ordered allocation and of the
@@ -263,6 +262,11 @@ $p \geq 0.01$. The regression trees and random forests of the paper's Fig.~5 are
 outside the criteria: we did not reimplement R's rpart and randomForest, and other
 implementations would differ by construction.
 
+The agreement budget of forest to built (the paper's Fig.~7) was added to the comparison
+after the ensembles had run, and is therefore outside the criteria: for its 64 values
+(four components, eight resolutions, two allocation methods) we report the same
+statistics for information only.
+
 \section{Results}
 
 \subsection{Deterministic level}
@@ -336,7 +340,11 @@ maps. Colours as in Fig.~3 of the original article.}
 All 20 metrics passed. Table~\ref{tab:ensemble} shows a selection and
 Figure~\ref{fig:fom} the figure of merit at every resolution; the spread between runs
 is the same in both implementations, including the larger spread of the stochastic
-ordered allocation.
+ordered allocation. Figure~\ref{fig:agreement} shows the agreement budget, which the
+criteria do not cover (Section~\ref{sec:comparison}): over its 64 values the means of the
+two implementations differ by at most $10^{-4}$ of the study area, at most 1.02 standard errors of the difference, and the smallest Kolmogorov--Smirnov $p$ is 0.24. As in the
+original article, the change simulated correctly grows as the resolution coarsens, because
+errors of location within a block cancel.
 
 The criteria detect a wrong model but not every wrong detail. With an elasticity of
 0.25, ten runs of the replication fail seven of the eight figure-of-merit metrics of
@@ -378,6 +386,15 @@ rounding.}
 Fig.~8 of the original article: mean and range of 30 runs of lulcc and of the
 replication.}
 \label{fig:fom}
+\end{figure}
+
+\begin{figure}[h]
+\includegraphics[width=\linewidth]{figures/fig_agreement_forest_built.png}
+\caption{Agreement budget of the forest-to-built transition against resolution, as in
+Fig.~7 of the original article: mean of 30 runs of lulcc (left bar of each pair) and of
+the replication (right bar, hatched), in percentage of the study area. Outside the
+acceptance criteria; see Section~\ref{sec:comparison}.}
+\label{fig:agreement}
 \end{figure}
 
 \subsection{The published values}
@@ -427,7 +444,8 @@ Code: \url{https://github.com/LambdaGeo/rescience-lulcc}. Reference outputs and 
 Docker environment that produces them: \url{https://github.com/LambdaGeo/lulcc-goldens}.
 With the reference downloaded, \texttt{make env}, then \texttt{make check} (about one
 minute), \texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
-Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figure~\ref{fig:fom};
+Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:fom}
+and~\ref{fig:agreement};
 \texttt{make maps} draws Figure~\ref{fig:maps}, and \texttt{make audit} (about three
 minutes) runs the checks of Section~\ref{sec:det}. Each takes the reference's directory
 as \texttt{GOLDENS=}. The

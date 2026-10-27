@@ -1,7 +1,7 @@
 PY      ?= .venv/bin/python
 GOLDENS ?= ../lulcc-goldens/goldens
 
-.PHONY: help env test check ensemble compare maps audit audit-power clean
+.PHONY: help env test check ensemble compare maps figures audit audit-power clean
 
 help:
 	@echo "make env     create .venv with the pinned packages"
@@ -9,7 +9,8 @@ help:
 	@echo "make check   compare with the deterministic golden, stage by stage (~1 min)"
 	@echo "             GOLDENS=path/to/lulcc-goldens/goldens"
 	@echo "make ensemble  our 30 seeds (~20 min)"
-	@echo "make compare   apply acceptance.toml to both ensembles, draw the figure"
+	@echo "make compare   apply acceptance.toml to both ensembles, draw the figures"
+	@echo "make figures   copy the figures of results/ into article/figures/"
 	@echo "make maps      map figure of the article (observed and simulated 1999)"
 	@echo "make audit     checks that the comparison is what it claims (~3 min)"
 	@echo "make audit-power  audit + ensemble negative control (~15 min more)"
@@ -32,6 +33,9 @@ compare:
 
 maps:
 	$(PY) scripts/make_maps.py $(GOLDENS) --out results/fig_maps.png
+
+figures:
+	cp results/fig_maps.png results/fig_fom_forest_built.png results/fig_agreement_forest_built.png article/figures/
 
 audit:
 	$(PY) scripts/audit.py $(GOLDENS) --out results/audit.json

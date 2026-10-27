@@ -4,7 +4,8 @@
 Mirrors demo/gmd-paper.R: 10% stratified training partition of the 1985
 map, glm per class, AUCs (Figs. 5-6), CLUE-S with jitter 0.0002 and the
 stochastic ordered allocation over t = 1..14, and the figure of merit of
-forest -> built at t14 at eight resolutions (Fig. 8).
+forest -> built at t14 at eight resolutions (Fig. 8), with its agreement
+budget (Fig. 7).
 
 The partition follows caret::createDataPartition as lulcc calls it: the
 class codes are numeric, so caret cuts them at their quantiles
@@ -91,4 +92,11 @@ def run_seed(pie: data.Pie, seed: int) -> dict:
         tabs = threemap.tables(x, x1, y1, FACTORS, data.CODES)
         for f, tab in zip(FACTORS, tabs):
             out[f"fom_forest_built_{name}_{f}"] = float(threemap.figure_of_merit(tab, 3)["transition"][0, 1])
+        # Agreement budget of forest -> built (Fig. 7 of the paper), as fractions of the
+        # study area: a misses, b hits, c wrong hits, d false alarms. Descriptive only:
+        # not among the metrics of acceptance.toml.
+        for f, tab in zip(FACTORS, tabs):
+            ab = threemap.agreement_budget(tab, 3, [0], [1], transition=True)
+            for k in "abcd":
+                out[f"ab_forest_built_{name}_{f}_{k}"] = float(ab[k])
     return out

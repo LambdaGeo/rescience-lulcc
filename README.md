@@ -70,6 +70,11 @@ within 3 standard errors and Kolmogorov–Smirnov p ≥ 0.01). Details in
 `results/ensemble_comparison.csv`; figure in
 `results/fig_fom_forest_built.png`.
 
+The agreement budget of forest → built (Fig. 7 of the paper) was added after the
+ensembles had run, so it is outside the criteria and reported for information: over
+its 64 values, means within 1.02 standard errors and KS p ≥ 0.24
+(`results/agreement_comparison.csv`, `results/fig_agreement_forest_built.png`).
+
 Where the paper's printed AUCs (one unseeded run) fall in lulcc's own 30
 runs: built 0.9384 (70th percentile), gain of built 0.6448 (63rd), other
 0.7276 (7th), forest 0.6423 (just below the minimum of the 30 runs,
