@@ -118,6 +118,7 @@ make maps       # Fig. 2
 make ensemble   # 30 runs of the replication (~15 min)
 make compare    # acceptance criteria, Table 2, Figs. 3 and 4
 make figures    # copy the figures of results/ into article/figures/
+make article    # make figures, then build article/article.pdf
 ```
 
 ## Building the article
@@ -129,15 +130,14 @@ Debian:
 sudo apt install make latexmk texlive-xetex texlive-latex-extra \
     texlive-fonts-recommended texlive-bibtex-extra biber python3-yaml
 sudo locale-gen en_US.UTF-8
-cd article && make
+make article
 ```
 
-Build it outside the replication's virtual environment (`deactivate` first): the
-template's `yaml-to-latex.py` needs PyYAML, which the system package `python3-yaml`
-provides and `.venv` does not. `make` also rebuilds Fig. 1
-(`article/figures/fig_method.tex`, TikZ) when its source changes; Figs. 2–4 come from
-`results/` through `make figures`. After installing missing packages, run `make clean`
-before `make`.
+`make article` copies Figs. 2–4 from `results/` and builds the PDF; it also rebuilds
+Fig. 1 (`article/figures/fig_method.tex`, TikZ) when its source changes. The template's
+`yaml-to-latex.py` runs with the system Python (`/usr/bin/python3`, with
+`python3-yaml`), so an active `.venv` does not get in the way; set `SYSPY=` to use
+another. After installing missing packages, run `make -C article clean` first.
 
 ## Licence
 

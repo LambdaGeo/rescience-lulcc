@@ -14,8 +14,11 @@ article: article.pdf
 
 # CUSTOM BUILD RULES
 # -----------------------------------------------------------------------------
+# The system Python (with python3-yaml), not an active virtual environment.
+SYSPY ?= /usr/bin/python3
+
 metadata.tex: metadata.yaml
-	./yaml-to-latex.py -i $< -o $@
+	$(SYSPY) yaml-to-latex.py -i $< -o $@
 
 figures/fig_method.pdf: figures/fig_method.tex
 	cd figures && xelatex -interaction=nonstopmode fig_method.tex && rm -f fig_method.aux fig_method.log
