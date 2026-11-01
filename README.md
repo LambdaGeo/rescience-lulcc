@@ -84,8 +84,10 @@ its 64 values, means within 1.02 standard errors and KS p ≥ 0.24
 Where the paper's printed AUCs (one unseeded run) fall in lulcc's own 30
 runs: built 0.9384 (70th percentile), gain of built 0.6448 (63rd), other
 0.7276 (7th), forest 0.6423 (just below the minimum of the 30 runs,
-0.6425). The paper used lulcc 1.0 in 2015; the goldens use 1.0.4 on
-current R.
+0.6425). The regression trees and random forests of Fig. 5, not replicated in
+Python, are checked the same way against lulcc's own 30 runs: all six printed AUCs fall
+inside their range (Table 3 of the article). The paper used lulcc 1.0 in 2015; the
+goldens use 1.0.4 on current R.
 
 ## Still to do
 
