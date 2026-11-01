@@ -114,6 +114,7 @@ repository (otherwise pass `GOLDENS=path/to/lulcc-goldens/goldens`):
 ```bash
 make env        # .venv with the pinned packages (requirements.lock)
 make test       # unit tests, seconds
+make platform   # OS, CPU, Python and package versions -> results/platform.txt
 make check      # deterministic level, Table 1 (~1 min)
 make audit      # checks of the comparison, Section 8.1 (~3 min)
 make maps       # Fig. 2
@@ -122,6 +123,14 @@ make compare    # acceptance criteria, Table 2, Figs. 3 and 4
 make figures    # copy the figures of results/ into article/figures/
 make article    # make figures, then build article/article.pdf
 ```
+
+## Platform
+
+As ReScience C asks, `make platform` records the platform the results were produced on
+(operating system, CPU, Python and the versions of the packages used) in
+`results/platform.txt`; run it with the same `.venv` as the other targets. The R
+environment of the reference is recorded in `lulcc-goldens/goldens/environment.json`
+(R 4.5.1 in a Docker image pinned by digest).
 
 ## Building the article
 
