@@ -32,7 +32,7 @@ figures/fig_method.pdf: figures/fig_method.tex
 # -interaction=nonstopmode keeps the pdflatex backend from stopping at a
 # missing file reference and interactively asking you for an alternative.
 
-article.pdf: article.tex content.tex bibliography.bib metadata.tex rescience.cls figures/fig_method.pdf
+article.pdf: article.tex content.tex header.tex bibliography.bib metadata.tex rescience.cls figures/fig_method.pdf
 	latexmk -pdf -pdflatex="xelatex -interaction=nonstopmode" -use-make article.tex
 
 clean:
