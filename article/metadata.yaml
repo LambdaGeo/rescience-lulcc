@@ -48,7 +48,7 @@ code:
 
 data:
   - url: https://github.com/LambdaGeo/lulcc-goldens
-  - doi:
+  - doi: 10.5281/zenodo.23866776
 
 replication:
  - cite: "Moulds, S., Buytaert, W., & Mijic, A. (2015). An open and extensible framework for spatially explicit land use change modelling: the lulcc R package. Geoscientific Model Development, 8, 3215-3229."

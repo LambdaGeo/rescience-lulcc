@@ -9,7 +9,8 @@ Replication, on DisSModel and DisSLUCC, of
 
 The target is a ReScience C submission. This repository holds the Python
 replication only; the reference outputs come from
-[lulcc-goldens](https://github.com/LambdaGeo/lulcc-goldens), generated with
+[lulcc-goldens](https://github.com/LambdaGeo/lulcc-goldens) (v0.1.0,
+[doi:10.5281/zenodo.23866776](https://doi.org/10.5281/zenodo.23866776)), generated with
 the original R package.
 
 **Status:** v0.1.0, the version described in the article (`article/article.pdf`).
