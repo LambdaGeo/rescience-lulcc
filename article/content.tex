@@ -15,9 +15,11 @@ regression, demand from interpolation between observed maps, spatial allocation 
 CLUE-S \supercite{Verburg:2002} and by an ordered procedure \supercite{Fuchs:2013},
 and pattern validation by three-map comparison \supercite{Pontius:2011}.
 
-We replicate that application in Python: a replication in the sense of
-\citet{NASEM:2019}, with new code and our own runs, rather than a reproduction with the
-original code. Both lulcc and the CLUE-S implementation we use were written from the
+We replicate that application in Python: a replication in the sense of ReScience C
+\supercite{Rougier:2017}, an independent implementation written from the article and run
+by us, rather than a reproduction with the original code. In the vocabulary of
+\citet{NASEM:2019}, which keeps the word replication for studies that collect new data,
+it is a study of the same data with new code. Both lulcc and the CLUE-S implementation we use were written from the
 published description of the algorithm \supercite{Verburg:2002}, independently of each
 other. Ours comes from LuccME \supercite{Aguiar:2012}, a land use change framework
 developed at INPE on the TerraME modelling platform \supercite{Carneiro:2013}, which
@@ -26,8 +28,8 @@ land use and emission scenarios for the Brazilian Amazon \supercite{Aguiar:2016}
 for Brazil \supercite{Bezerra:2022}. The original article itself lists LuccME among
 the implementations of CLUE-S. Allocation procedures are known to leave room for
 different readings, with consequences for the simulated maps \supercite{Mazy:2023};
-the comparison therefore tests two independent readings of the same description, with
-lulcc's own demonstration as the reference.
+for CLUE-S, the comparison therefore tests two independent readings of the same
+description, with lulcc's own demonstration as the reference.
 
 \section{Replication summary}
 
@@ -44,7 +46,8 @@ replication is original, and its parts have three origins, shown in the right-ha
     the discrete allocation of LuccME, \texttt{AllocationD\-ClueS\-Like}, and not from
     lulcc. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
     outputs of TerraME with the same number of iterations in every year and differences
-    of at most $1.2 \times 10^{-7}$ \supercite{DisSLUCCbenchmark:2026}.
+    of at most $1.2 \times 10^{-7}$ \supercite{DisSLUCCbenchmark:2026}; the same package runs
+    the model of a national land use change workflow over Brazil \supercite{OpenLUCC:2026}.
   \item \emph{Written for this replication, without reference to lulcc's code}: reading
     the data, the logistic regression (statsmodels) and its AUC, and the potential that
     passes suitability and elasticity to the CLUE-S allocation.
@@ -93,7 +96,8 @@ demonstration script required one repair, unrelated to the model
 \section{The original model}
 \label{sec:model}
 
-The Plum Island Ecosystems data set\supercite{Pontius:2014} covers a site in north-east
+The Plum Island Ecosystems data set, which lulcc distributes as derived from the study of
+Pontius and Parmentier\supercite{Pontius:2014}, covers a site in north-east
 Massachusetts on a grid of $434 \times 497$ cells of about 100\,m (99.92\,m by
 99.95\,m), 113\,563 of them inside the study area. It holds land use maps for 1985,
 1991 and 1999 (forest, built, other), treated as time points 0, 6 and 14, and three
@@ -204,10 +208,11 @@ R 4.5.1 and packages from a dated snapshot of CRAN (1 October 2026): lulcc 1.0.4
 3.6-32, sp 2.2-0, caret 7.0-1, ROCR 1.0-12, randomForest 4.7-1.2, rpart 4.1.27. The lulcc
 1.0.4 on CRAN was republished in November 2025, but its source package is the one built
 by the author in February 2019. Replication: Python 3.12, DisSModel 0.6.6, DisSLUCC 0.5.0,
-NumPy 2.5, SciPy 1.18, statsmodels 0.15, rasterio 1.5.
+NumPy 2.5\supercite{Harris:2020}, SciPy 1.18\supercite{Virtanen:2020}, statsmodels
+0.15\supercite{Seabold:2010}, rasterio 1.5.
 
 \paragraph{Hardware and time.} The reference and the replication were run on one
-desktop computer (Dell OptiPlex 7050, Intel Core i7-7700T at 2.9\,GHz, Ubuntu). One run of CLUE-S over the 14 steps took
+desktop computer (Dell OptiPlex 7050, Intel Core i7-7700T at 2.9\,GHz, Linux Mint 22.2, based on Ubuntu 24.04). One run of CLUE-S over the 14 steps took
 on average 11\,s in lulcc, whose inner loop is in C, and about 20\,s in the
 replication; the ordered allocation took 3\,s and 0.2\,s. One complete run of the
 paper's experiment, including the regression trees and random forests of lulcc, took
