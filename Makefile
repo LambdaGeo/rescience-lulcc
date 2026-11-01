@@ -1,11 +1,12 @@
 PY      ?= .venv/bin/python
 GOLDENS ?= ../lulcc-goldens/goldens
 
-.PHONY: help env test check ensemble compare maps figures article audit audit-power clean
+.PHONY: help env test platform check ensemble compare maps figures article audit audit-power clean
 
 help:
 	@echo "make env     create .venv with the pinned packages"
 	@echo "make test    unit tests (seconds)"
+	@echo "make platform  record OS, CPU, Python and package versions in results/platform.txt"
 	@echo "make check   compare with the deterministic golden, stage by stage (~1 min)"
 	@echo "             GOLDENS=path/to/lulcc-goldens/goldens"
 	@echo "make ensemble  our 30 seeds (~20 min)"
@@ -22,6 +23,9 @@ env:
 
 test:
 	$(PY) -m pytest -q tests
+
+platform:
+	$(PY) scripts/platform_info.py --out results/platform.txt
 
 check:
 	$(PY) scripts/check_deterministic.py $(GOLDENS) --out results/deterministic.json
