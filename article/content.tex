@@ -83,7 +83,8 @@ numbers, and are compared in distribution.
 Two parts of the original application are not replicated: the regression trees and
 random forests of the paper's Fig.~5, since we did not reimplement R's rpart and
 randomForest, and the published curves of Figs.~7--8, whose values the paper does not
-give; we compare those figures with our own runs of lulcc instead.
+give; we compare those figures with our own runs of lulcc instead, and the AUCs printed
+in Fig.~5 for all three model types with lulcc's own spread (Section~\ref{sec:published}).
 
 Given the same inputs, the CLUE-S allocation of DisSLUCC reproduces every simulated map
 of lulcc cell by cell, and so do our ports of the ordered allocation and of the
@@ -403,15 +404,42 @@ acceptance criteria; see Section~\ref{sec:comparison}.}
 \end{figure}
 
 \subsection{The published values}
+\label{sec:published}
 
-The values printed in the paper fall inside lulcc's own spread with one exception. In
-our 30 runs of lulcc, the paper's AUC for built (0.9384) is at the 70th percentile,
-that for the gain of built (0.6448) at the 63rd and that for other (0.7276) at the
-7th; the AUC for forest (0.6423) is slightly below the lowest of the 30 runs (0.6425).
-The paper used lulcc 1.0 with the R of 2015; our reference used lulcc 1.0.4 on current
-R. We did not investigate the difference further. It is not unexpected: a value from the
-same distribution falls outside the range of 30 runs with probability 2/31, about 6\%,
-and for at least one of four AUCs with probability about 23\%.
+The paper prints ten AUCs: those of the three model types for each class (its Fig.~5)
+and that of the glm for the gain of built (its Fig.~6). Table~\ref{tab:published} places
+them in the spread of our 30 runs of lulcc; the regression trees and random forests are
+lulcc's own, since the replication does not include them. Nine of the ten values fall
+inside that spread; the AUC of the glm for forest (0.6423) is slightly below the lowest of
+the 30 runs (0.6425). The paper used lulcc 1.0 with the R of 2015, our reference lulcc
+1.0.4 on current R, and we did not investigate the difference further. It is not
+unexpected: a value from the same distribution falls outside the range of 30 runs with
+probability 2/31, about 6\%, and at least one of ten does with probability about 49\%.
+
+\begin{table}[h]
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llcccc}
+\toprule
+Model & Class & paper & lulcc, 30 runs: min--max & mean & percentile of paper \\
+\midrule
+glm   & forest        & 0.6423 & 0.6425--0.6452 & 0.6439 & below min \\
+glm   & built         & 0.9384 & 0.9377--0.9389 & 0.9382 & 70 \\
+glm   & other         & 0.7276 & 0.7270--0.7317 & 0.7295 & 7 \\
+glm   & gain of built & 0.6448 & 0.6435--0.6450 & 0.6446 & 63 \\
+rpart & forest        & 0.6222 & 0.6219--0.6362 & 0.6280 & 3 \\
+rpart & built         & 0.9158 & 0.9150--0.9162 & 0.9156 & 70 \\
+rpart & other         & 0.6458 & 0.6357--0.6747 & 0.6497 & 60 \\
+rf    & forest        & 0.6117 & 0.6102--0.6178 & 0.6136 & 13 \\
+rf    & built         & 0.9363 & 0.9336--0.9371 & 0.9355 & 83 \\
+rf    & other         & 0.7074 & 0.7022--0.7103 & 0.7050 & 93 \\
+\bottomrule
+\end{tabular}
+\caption{AUCs printed in the original article (its Figs.~5 and 6, one unseeded run of
+lulcc 1.0) against 30 runs of lulcc 1.0.4. rpart: regression tree; rf: random forest
+(in regression mode, Section~\ref{sec:analysis}).}
+\label{tab:published}
+\end{table}
 
 \section{Obstacles}
 \label{sec:obstacles}
