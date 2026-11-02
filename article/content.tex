@@ -353,6 +353,7 @@ maps. Colours as in Fig.~3 of the original article.}
 \end{figure}
 
 \subsection{Ensemble level}
+\label{sec:ens}
 
 All 20 metrics passed. Table~\ref{tab:ensemble} shows a selection and
 Figure~\ref{fig:fom} the figure of merit at every resolution; the spread between runs
@@ -509,7 +510,8 @@ minute), \texttt{make ensemble} (about 15 minutes) and \texttt{make compare} rep
 Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:fom}
 and~\ref{fig:agreement};
 \texttt{make maps} draws Figure~\ref{fig:maps}, and \texttt{make audit} (about three
-minutes) runs the checks of Section~\ref{sec:det}. Each takes the reference's directory
+minutes) runs the checks of Section~\ref{sec:det}, and \texttt{make audit-power} (about 20
+minutes) adds the ensemble control of Section~\ref{sec:ens}. Each takes the reference's directory
 as \texttt{GOLDENS=}; \texttt{make platform} records the platform and \texttt{make
 article} builds this PDF. The reference itself is regenerated in lulcc-goldens with
 \texttt{make image} and \texttt{make goldens} (about 45 minutes, Docker), and

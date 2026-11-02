@@ -19,7 +19,7 @@ help:
 
 env:
 	python3 -m venv .venv
-	.venv/bin/pip install -q -r requirements.txt
+	.venv/bin/pip install -q -r requirements.lock
 
 test:
 	$(PY) -m pytest -q tests

@@ -105,7 +105,9 @@ and ours match at the same step only; the perturbation subclass with perturbatio
 equals the published component; DisSLUCC's own logistic potential also reproduces
 lulcc; and five negative controls (elasticity, scale factor, tolerance, noise on the
 suitability, demand) make the maps differ. `make audit-power` adds the ensemble
-negative control (about 15 minutes more). Results in `results/audit.json`.
+negative control of Section 8.2 (about 15 minutes more). Both write
+`results/audit.json`; the archived file comes from `make audit-power`, and `make audit`
+alone rewrites it without the ensemble control.
 
 ## Use
 
@@ -118,6 +120,7 @@ make test       # unit tests, seconds
 make platform   # OS, CPU, Python and package versions -> results/platform.txt
 make check      # deterministic level, Table 1 (~1 min)
 make audit      # checks of the comparison, Section 8.1 (~3 min)
+make audit-power  # the same plus the ensemble control of Section 8.2 (~20 min)
 make maps       # Fig. 2
 make ensemble   # 30 runs of the replication (~15 min)
 make compare    # acceptance criteria, Table 2, Figs. 3 and 4
