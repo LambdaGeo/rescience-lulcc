@@ -143,7 +143,7 @@ def _agreement_figure(R: pd.DataFrame, P: pd.DataFrame, path: Path) -> None:
         for off, df, hatch in ((-w / 2 - 0.01, R, None), (w / 2 + 0.01, P, "////")):
             bottom = np.zeros(len(FACTORS))
             for k in ("a", "b", "c", "d"):
-                v = 100 * df[[f"ab_forest_built_{model}_{f}_{k}" for f in FACTORS]].mean().to_numpy()
+                v = df[[f"ab_forest_built_{model}_{f}_{k}" for f in FACTORS]].mean().to_numpy()
                 ax.bar(x + off, v, w, bottom=bottom, color=colors[k], hatch=hatch,
                        edgecolor="white", lw=0.4)
                 bottom += v
@@ -152,7 +152,7 @@ def _agreement_figure(R: pd.DataFrame, P: pd.DataFrame, path: Path) -> None:
         ax.set_xlabel("Resolution (multiple of native pixel size)")
         ax.grid(axis="y", alpha=0.3)
         ax.set_axisbelow(True)
-    axes[0].set_ylabel("Percentage of study area")
+    axes[0].set_ylabel("Fraction of study area")
     handles = [Patch(color=colors[k], label=AB[k]) for k in ("d", "c", "b", "a")]
     handles += [Patch(facecolor="white", edgecolor="0.3", label="left bar: lulcc (R)"),
                 Patch(facecolor="white", edgecolor="0.3", hatch="////", label="right bar: replication")]

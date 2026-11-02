@@ -16,8 +16,8 @@ CLUE-S \supercite{Verburg:2002} and by an ordered procedure \supercite{Fuchs:201
 and pattern validation by three-map comparison \supercite{Pontius:2011}.
 
 We replicate that application in Python: a replication in the sense of ReScience C
-\supercite{Rougier:2017}, an independent implementation written from the article and run
-by us, rather than a reproduction with the original code. In the vocabulary of
+\supercite{Rougier:2017}, an independent implementation written from the article and run by us (with the
+exceptions listed in Section~2), rather than a reproduction with the original code. In the vocabulary of
 \citet{NASEM:2019}, which keeps the word replication for studies that collect new data,
 it is a study of the same data with new code. Both lulcc and the CLUE-S implementation we use were written from the
 published description of the algorithm \supercite{Verburg:2002}, independently of each
@@ -80,11 +80,11 @@ because R's random sample cannot be drawn again in Python. At the \emph{ensemble
 both sides run the published script, with its randomness, using independent random
 numbers, and are compared in distribution.
 
-Two parts of the original application are not replicated: the regression trees and
-random forests of the paper's Fig.~5, since we did not reimplement R's rpart and
-randomForest, and the published curves of Figs.~7--8, whose values the paper does not
-give; we compare those figures with our own runs of lulcc instead, and the AUCs printed
-in Fig.~5 for all three model types with lulcc's own spread (Section~\ref{sec:published}).
+The regression trees and random forests of the paper's Fig.~5 are not replicated, since
+we did not reimplement R's rpart and randomForest; the AUCs printed for them are compared
+with lulcc's own spread. The paper gives the curves of its Figs.~7--8 without values, so
+they are compared, as read from the plots, with the means of our runs of lulcc
+(Section~\ref{sec:published}).
 
 Given the same inputs, the CLUE-S allocation of DisSLUCC reproduces every simulated map
 of lulcc cell by cell, and so do our ports of the ordered allocation and of the
@@ -179,15 +179,15 @@ CLUE-S at each step, so only the map produced at each step can be compared, not 
 of the iteration. Against LuccME the iteration counts are compared and agree.
 
 \paragraph{Results shown only as figures.} The AUCs are printed in the figures, but the
-agreement budgets and figures of merit are only drawn (Figs.~7--8). We compare the
-latter with our own runs of lulcc, not with the published curves.
+agreement budgets and figures of merit are only drawn (Figs.~7--8). We compare them with our own runs of lulcc, and with the published curves only as read
+from the plots (Section~\ref{sec:published}).
 
 \section{Computational set-up}
 \label{sec:setup}
 
 \paragraph{Data.} The replication reads the Plum Island Ecosystems data set from GeoTIFF
-files exported from the R package (\texttt{data(pie)}), without any other change; the
-exported layers carry the original CRS (NAD83, Massachusetts Mainland, EPSG:26986).
+files exported from the R package (\texttt{data(pie)}), without any other change; the exported layers carry the original CRS (NAD83, Massachusetts Mainland, EPSG:26986)
+and are redistributed in lulcc-goldens under the GPL of lulcc.
 
 \paragraph{Reference.} We ran the demonstration script with lulcc 1.0.4
 \supercite{lulcc:2019} and archived the outputs \supercite{lulccgoldens:2026}. Two
@@ -211,7 +211,7 @@ R 4.5.1 and packages from a dated snapshot of CRAN (1 October 2026): lulcc 1.0.4
 by the author in February 2019. Replication: Python 3.12, DisSModel 0.6.6, DisSLUCC 0.5.0,
 NumPy 2.5\supercite{Harris:2020}, SciPy 1.18\supercite{Virtanen:2020}, statsmodels
 0.15\supercite{Seabold:2010}, rasterio 1.5; exact versions of every package in
-\texttt{requirements.lock} and, for the computer below, \texttt{results/platform.txt}.
+\texttt{requirements\allowbreak.lock} and, for the computer below, \texttt{results/\allowbreak platform.txt}.
 
 \paragraph{Hardware and time.} The reference and the replication were run on one
 desktop computer (Dell OptiPlex 7050, Intel Core i7-7700T at 2.9\,GHz, Linux Mint 22.2, based on Ubuntu 24.04). One run of CLUE-S over the 14 steps took
@@ -228,7 +228,7 @@ component of DisSLUCC (\texttt{AllocationDClue\-SLike}) on a DisSModel raster ba
 the simulation starts at time 1, as lulcc does, and the suitability with elasticity is
 supplied to it in double precision. The random perturbation is added by a subclass of
 the DisSLUCC component that replaces its iteration loop and draws a new uniform number
-for every cell and class at every iteration; a test in the repository checks that, with
+for every cell and class at every iteration; a test in \texttt{tests/test\_components.py} checks that, with
 the perturbation set to zero, it gives the same result as the published component. The ordered allocation and the three-map comparison are separate
 modules, operating on the valid cells in the raster's row-major order, which is also
 lulcc's cell order.
@@ -263,7 +263,9 @@ coefficients (same training cells, different optimiser), $10^{-8}$ for the suita
 $10^{-12}$ for the three-map tables and figures of merit; the observed transitions and the
 demand must be identical, and the allocated maps must have no differing cell.
 
-\paragraph{Ensemble level.} Our 30 runs (seeds 1 to 30 of NumPy's default generator) are
+\paragraph{Ensemble level.} Our 30 runs (seeds 1 to 30 of NumPy's default generator, PCG64; the seed numbers
+coincide with lulcc's, but R uses the Mersenne Twister, so the random streams are
+independent) are
 compared with lulcc's 30 on 20 metrics: the AUC of the glm for each class and for the
 gain of built, and the figure of merit of forest to built for each allocation method at
 each of the eight resolutions. A metric passes if the means differ by at most three standard errors of the difference
@@ -405,7 +407,7 @@ replication.}
 \includegraphics[width=\linewidth]{figures/fig_agreement_forest_built.png}
 \caption{Agreement budget of the forest-to-built transition against resolution, as in
 Fig.~7 of the original article: mean of 30 runs of lulcc (left bar of each pair) and of
-the replication (right bar, hatched), in percentage of the study area. Outside the
+the replication (right bar, hatched), as a fraction of the study area. Outside the
 acceptance criteria; see Section~\ref{sec:comparison}.}
 \label{fig:agreement}
 \end{figure}
@@ -485,12 +487,15 @@ ported ordered allocation and validation. That implementation was ported from Lu
 and reproduces LuccME's discrete test models, as a port should; what this replication adds is
 that it also reproduces lulcc, so on this application the two independent readings of
 the description of CLUE-S, in LuccME and in lulcc, coincide. With independent random numbers, the two implementations agree in distribution on every
-metric compared, and our runs of lulcc match the values and curves the paper published.
+metric compared, and our runs of lulcc agree with what the paper published: nine of its ten AUCs fall
+within lulcc's own spread, and its curves, read from the plots, match the means of our
+runs.
 The regression trees and random forests of the paper's Fig.~5 were checked against lulcc
 itself, not replicated. The main obstacle was
 not in the model but in the environment around it.
 
 \section*{Reproducing this replication}
+\sloppy
 
 Code: \url{https://github.com/LambdaGeo/rescience-lulcc}. Reference outputs and the
 Docker environment that produces them: \url{https://github.com/LambdaGeo/lulcc-goldens},
