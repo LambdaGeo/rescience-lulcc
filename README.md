@@ -34,7 +34,7 @@ code (followed step by step where the paper leaves a choice open).
 | `ensemble.py` | one run of the paper's experiment per seed | AUC written; training sample a port of `caret::createDataPartition` |
 
 DisSLUCC's CLUE-S came from LuccME (INPE), not from lulcc. The two
-implementations were written independently from Verburg et al. (2002).
+implementations were written, to our knowledge independently, from Verburg et al. (2002).
 
 Points the paper leaves open, resolved by reading lulcc's source (Section 4 of the
 article):
