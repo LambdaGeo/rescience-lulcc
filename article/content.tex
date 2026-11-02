@@ -20,8 +20,7 @@ We replicate that application in Python: a replication in the sense of ReScience
 exceptions listed in Section~2), rather than a reproduction with the original code. In the vocabulary of
 \citet{NASEM:2019}, which keeps the word replication for studies that collect new data,
 it is a study of the same data with new code. Both lulcc and the CLUE-S implementation we use were written from the
-published description of the algorithm \supercite{Verburg:2002}, independently of each
-other. Ours comes from LuccME \supercite{Aguiar:2012}, a land use change framework
+published description of the algorithm \supercite{Verburg:2002}, to our knowledge independently of each other. Ours comes from LuccME \supercite{Aguiar:2012}, a land use change framework
 developed at INPE on the TerraME modelling platform \supercite{Carneiro:2013}, which
 organises a model into demand, potential and allocation components and has supported
 land use and emission scenarios for the Brazilian Amazon \supercite{Aguiar:2016} and
@@ -174,9 +173,10 @@ stopping condition based on the mean signed difference between demand and alloca
 because the rounded demand sums to the number of cells, that mean is zero, and only the
 largest difference stops the iteration.
 
-\paragraph{Iterations not reported.} lulcc does not report the number of iterations of
+\paragraph{Iterations not reported.} The CLUE-S of lulcc does not report the number of iterations of
 CLUE-S at each step, so only the map produced at each step can be compared, not the path
-of the iteration. Against LuccME the iteration counts are compared and agree.
+of the iteration. Against LuccME the iteration counts are compared, in the DisSLUCC benchmark
+\supercite{DisSLUCCbenchmark:2026}, and agree.
 
 \paragraph{Results shown only as figures.} The AUCs are printed in the figures, but the
 agreement budgets and figures of merit are only drawn (Figs.~7--8). We compare them with our own runs of lulcc, and with the published curves only as read
@@ -235,7 +235,7 @@ lulcc's cell order.
 
 \paragraph{Why the maps can be identical.} Two independently written implementations of
 an iterative allocation give the same map only if they agree on everything that decides
-a cell. lulcc's C loop and DisSLUCC's component do. The score of a class in a cell is its
+a cell. The C loop of lulcc and the component of DisSLUCC do. The score of a class in a cell is its
 suitability, plus the elasticity if the cell belonged to that class at the start of the
 step, plus a class term that starts at zero at every step. Each cell takes the class with
 the highest score, the first class in order on a tie. After each pass the class term
@@ -360,9 +360,9 @@ two implementations differ by at most $10^{-4}$ of the study area, at most 1.02 
 original article, the change simulated correctly grows as the resolution coarsens, because
 errors of location within a block cancel.
 
-The criteria detect a wrong model but not every wrong detail. With an elasticity of
-0.25, ten runs of the replication fail seven of the eight figure-of-merit metrics of
-CLUE-S; without any perturbation they fail none. Most of the spread between runs comes
+The criteria detect a wrong model but not every wrong detail. With an elasticity of 0.25, ten runs of the replication (ten rather than 30, to keep
+the audit short; fewer runs make the test more tolerant) fail seven of the eight
+figure-of-merit metrics of CLUE-S; without any perturbation they fail none. Most of the spread between runs comes
 from the training sample, and the perturbation changes only a few cells (19 in the
 final map of one run), so the ensemble level confirms the distribution of the results,
 not the implementation of the perturbation.
@@ -471,7 +471,8 @@ existed; the allocation creates each simulated map from the initial one, the new
 object carries a CRS in the current form and the old one does not, and the check that
 precedes stacking them fails. Reassigning the CRS of the old objects does not help: it
 leaves them with no CRS at all. Rebuilding each layer as a new raster object with the
-same grid, values and CRS solves it; this is the only change we made to the script. A
+same grid, values and CRS solves it, and the script checks that the values, extent and
+resolution of every layer are unchanged; this is the only change we made to the script. A
 package written to make land use models reproducible thus needed a repair to run
 its own published example eleven years later, for a reason unrelated to the model.
 
