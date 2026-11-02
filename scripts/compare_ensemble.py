@@ -84,8 +84,10 @@ def main() -> int:
     return 0
 
 
-AB = {"a": "change simulated as persistence", "b": "change simulated correctly",
-      "c": "change simulated incorrectly", "d": "persistence simulated as change"}
+# Labels, colours and stacking order (a at the bottom) as in Fig. 7 of the paper.
+AB = {"a": "Change simulated as persistence (misses)", "b": "Change simulated correctly (hits)",
+      "c": "Change simulated as change to wrong category (wrong hits)",
+      "d": "Persistence simulated as change (false alarms)"}
 FACTORS = [2 ** k for k in range(1, 9)]
 
 
@@ -133,14 +135,14 @@ def _agreement_figure(R: pd.DataFrame, P: pd.DataFrame, path: Path) -> None:
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
 
-    colors = {"a": "#d1495b", "b": "#66a182", "c": "#edae49", "d": "#00798c"}
+    colors = {"a": "#66c2a5", "b": "#fc8d62", "c": "#8da0cb", "d": "#e78ac3"}
     x = np.arange(len(FACTORS))
     w = 0.38
     fig, axes = plt.subplots(1, 2, figsize=(8, 3.6), sharey=True)
     for ax, model, title in zip(axes, ("clues", "ordered"), ("CLUE-S", "Ordered")):
         for off, df, hatch in ((-w / 2 - 0.01, R, None), (w / 2 + 0.01, P, "////")):
             bottom = np.zeros(len(FACTORS))
-            for k in ("b", "a", "c", "d"):
+            for k in ("a", "b", "c", "d"):
                 v = 100 * df[[f"ab_forest_built_{model}_{f}_{k}" for f in FACTORS]].mean().to_numpy()
                 ax.bar(x + off, v, w, bottom=bottom, color=colors[k], hatch=hatch,
                        edgecolor="white", lw=0.4)
@@ -151,11 +153,11 @@ def _agreement_figure(R: pd.DataFrame, P: pd.DataFrame, path: Path) -> None:
         ax.grid(axis="y", alpha=0.3)
         ax.set_axisbelow(True)
     axes[0].set_ylabel("Percentage of study area")
-    handles = [Patch(color=colors[k], label=AB[k]) for k in ("b", "a", "c", "d")]
+    handles = [Patch(color=colors[k], label=AB[k]) for k in ("d", "c", "b", "a")]
     handles += [Patch(facecolor="white", edgecolor="0.3", label="left bar: lulcc (R)"),
                 Patch(facecolor="white", edgecolor="0.3", hatch="////", label="right bar: replication")]
-    fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=7, frameon=False)
-    fig.tight_layout(rect=(0, 0.13, 1, 1))
+    fig.legend(handles=handles, loc="lower center", ncol=2, fontsize=7, frameon=False)
+    fig.tight_layout(rect=(0, 0.19, 1, 1))
     fig.savefig(path, dpi=200)
 
 

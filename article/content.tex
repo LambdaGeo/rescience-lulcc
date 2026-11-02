@@ -44,7 +44,7 @@ replication is original, and its parts have three origins, shown in the right-ha
   \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged at
     the deterministic level. It was ported, before and independently of this work, from
     the discrete allocation of LuccME, \texttt{AllocationD\-ClueS\-Like}, and not from
-    lulcc. In the three LuccME test labs that use it, DisSLUCC 0.5.0 reproduces the
+    lulcc. In the three test models distributed with LuccME that use it, DisSLUCC 0.5.0 reproduces the
     outputs of TerraME with the same number of iterations in every year and differences
     of at most $1.2 \times 10^{-7}$ \supercite{DisSLUCCbenchmark:2026}; the same package runs
     the model of a national land use change workflow over Brazil \supercite{OpenLUCC:2026}.
@@ -119,9 +119,10 @@ that sum to the number of cells.
 its suitability plus an elasticity (0.2 for all classes) if the cell already belongs to
 that class. Each cell is allocated to the class with the highest value plus a
 class-specific iteration term; the term is then increased by the difference between
-demand and allocated area, times a scale factor ($10^{-6}$), until the largest
-difference is at most 50 cells. At every iteration the suitability is perturbed by a
-uniform random number in $[-0.0002, 0.0002]$ (\texttt{jitter.f}).
+demand and allocated area, times a scale factor ($10^{-6}$), until the largest difference is at most 50 cells (\texttt{max.diff}; a second condition,
+\texttt{ave.diff}~$= 50$, is discussed in Section~\ref{sec:analysis}), with at most 1000
+iterations per step (\texttt{max.iter}). At every iteration the suitability is perturbed
+by a uniform random number in $[-0.0002, 0.0002]$ (\texttt{jitter.f}).
 
 \paragraph{Ordered allocation.} Classes are visited in a fixed order (built, forest,
 other). A class with rising demand takes the most suitable cells not yet settled; a
@@ -139,8 +140,7 @@ of the forest-to-built transition for both allocation methods (its Figs.~7 and 8
 \label{sec:analysis}
 
 The article states the model, its parameters and the code that produced its figures,
-which the package ships as a demonstration script (\texttt{demo/gmd-paper.R}). Four
-aspects are nonetheless not determined by the text.
+which the package ships as a demonstration script (\texttt{demo/gmd-paper.R}). Five aspects are nonetheless not determined by the text.
 
 \paragraph{Random numbers without a seed.} Three steps draw random numbers: the training
 sample, the CLUE-S perturbation and the stochastic ordered allocation. The script sets
@@ -252,20 +252,25 @@ and so does the perturbation subclass of the ensemble; the limit was never reach
 \section{Comparison and acceptance criteria}
 \label{sec:comparison}
 
-Criteria were recorded in the code repository before either ensemble was run; the
-commit that adds them precedes those with results.
+Criteria were recorded in the code repository, in \texttt{acceptance.toml}, before either
+ensemble was run: the commit that adds the file (\texttt{932d9ed}, 24 October 2026, 16:24
+UTC) precedes the first commit with results (\texttt{f342eb2}, 17:22 UTC), and the file
+has not changed since.
 
 \paragraph{Deterministic level.} Each stage is fed with the reference's own inputs, so
-that a difference points at that stage only (centre of Fig.~\ref{fig:method}). Coefficients and suitability must agree
-within numerical precision; demand, allocated maps and validation tables must be
-identical or agree to rounding error.
+that a difference points at that stage only (centre of Fig.~\ref{fig:method}). The recorded tolerances are a relative difference of $10^{-6}$ for the regression
+coefficients (same training cells, different optimiser), $10^{-8}$ for the suitability and
+$10^{-12}$ for the three-map tables and figures of merit; the observed transitions and the
+demand must be identical, and the allocated maps must have no differing cell.
 
 \paragraph{Ensemble level.} Our 30 runs (seeds 1 to 30 of NumPy's default generator) are
 compared with lulcc's 30 on 20 metrics: the AUC of the glm for each class and for the
 gain of built, and the figure of merit of forest to built for each allocation method at
-each of the eight resolutions. A metric passes if the means differ by at most three
-standard errors of the difference and a two-sample Kolmogorov--Smirnov test gives
-$p \geq 0.01$. The regression trees and random forests of the paper's Fig.~5 are
+each of the eight resolutions. A metric passes if the means differ by at most three standard errors of the difference
+(or $10^{-6}$, a floor for metrics with no spread, which no metric reached) and a
+two-sample Kolmogorov--Smirnov test gives $p \geq 0.01$. With 20 tests at that level,
+the chance that at least one fails by chance alone is about 18\%; no correction was
+applied, and a failure would have been reported and discussed, not removed. The regression trees and random forests of the paper's Fig.~5 are
 outside the criteria: we did not reimplement R's rpart and randomForest, and other
 implementations would differ by construction.
 
@@ -383,7 +388,8 @@ FoM ordered, factor 256 & 0.6795 (0.0326) & 0.6784 (0.0327) & $-0.0011$ & 0.0253
 \caption{Ensemble level, 30 runs each (selection of the 20 metrics; all passed).
 FoM: figure of merit of the forest-to-built transition at 1999. Tolerance: three
 standard errors of the difference of means. Differences are computed before
-rounding.}
+rounding. All 20 metrics: \texttt{results/ensemble\_comparison.csv} in the code
+repository.}
 \label{tab:ensemble}
 \end{table}
 
@@ -416,6 +422,16 @@ the 30 runs (0.6425). The paper used lulcc 1.0 with the R of 2015, our reference
 1.0.4 on current R, and we did not investigate the difference further. It is not
 unexpected: a value from the same distribution falls outside the range of 30 runs with
 probability 2/31, about 6\%, and at least one of ten does with probability about 49\%.
+
+The paper's Figs.~7 and 8 give no values, but read from the plots they agree with the
+means of our 30 runs of lulcc (Figs.~\ref{fig:fom} and~\ref{fig:agreement}). The figure of
+merit rises from about 0.12 (CLUE-S) and 0.11 (ordered) at the finest resolution to about
+0.76 and 0.68 at the coarsest, against means of 0.12, 0.11, 0.77 and 0.68; and in both the
+ordered allocation scores higher than CLUE-S at factors 8 to 64 and lower at 128
+and 256. The
+agreement budget of CLUE-S at the finest resolution adds up to about 0.077 of the study
+area in the paper and 0.076 in our runs, with misses, hits and false alarms of about
+0.025, 0.009 and 0.037 against 0.026, 0.009 and 0.036.
 
 \begin{table}[h]
 \footnotesize
@@ -466,10 +482,12 @@ installed by hand.
 The Plum Island Ecosystems application of lulcc was replicated. With the same inputs,
 an independent implementation of CLUE-S reproduces lulcc's maps exactly, and so do our
 ported ordered allocation and validation. That implementation was ported from LuccME
-and reproduces LuccME's discrete labs, as a port should; what this replication adds is
+and reproduces LuccME's discrete test models, as a port should; what this replication adds is
 that it also reproduces lulcc, so on this application the two independent readings of
-the description of CLUE-S, in LuccME and in lulcc, coincide. With independent random numbers, the
-two implementations agree in distribution on every metric compared. The main obstacle was
+the description of CLUE-S, in LuccME and in lulcc, coincide. With independent random numbers, the two implementations agree in distribution on every
+metric compared, and our runs of lulcc match the values and curves the paper published.
+The regression trees and random forests of the paper's Fig.~5 were checked against lulcc
+itself, not replicated. The main obstacle was
 not in the model but in the environment around it.
 
 \section*{Reproducing this replication}
@@ -483,7 +501,10 @@ Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:fom}
 and~\ref{fig:agreement};
 \texttt{make maps} draws Figure~\ref{fig:maps}, and \texttt{make audit} (about three
 minutes) runs the checks of Section~\ref{sec:det}. Each takes the reference's directory
-as \texttt{GOLDENS=}. The
+as \texttt{GOLDENS=}; \texttt{make platform} records the platform and \texttt{make
+article} builds this PDF. The reference itself is regenerated in lulcc-goldens with
+\texttt{make image} and \texttt{make goldens} (about 45 minutes, Docker), and
+\texttt{make verify} checks it against its checksums. The
 versions of the Python packages are fixed in the file \texttt{requirements\allowbreak.lock}, and the R
 environment of the reference in the Dockerfile of lulcc-goldens. The code is released
 under GPL-3.0-or-later, the licence family of lulcc, because part of it follows lulcc's
@@ -527,6 +548,5 @@ this, the acceptance criteria were recorded before the ensembles were run, the r
 was produced with lulcc's own code in a separate archive, and DisSLUCC was used
 unchanged. The authors declare no other competing interests.
 
-\noindent\emph{Complete table of the 20 ensemble metrics: see
-\texttt{results/ensemble\_comparison.csv} in the code repository.}
+
 
