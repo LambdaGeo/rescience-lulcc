@@ -214,9 +214,10 @@ NumPy 2.5\supercite{Harris:2020}, SciPy 1.18\supercite{Virtanen:2020}, statsmode
 \texttt{requirements\allowbreak.lock} and, for the computer below, \texttt{results/\allowbreak platform.txt}.
 
 \paragraph{Hardware and time.} The reference and the replication were run on one
-desktop computer (Dell OptiPlex 7050, Intel Core i7-7700T at 2.9\,GHz, Linux Mint 22.2, based on Ubuntu 24.04). One run of CLUE-S over the 14 steps took
-on average 11\,s in lulcc, whose inner loop is in C, and about 20\,s in the
-replication; the ordered allocation took 3\,s and 0.2\,s. One complete run of the
+desktop computer (Dell OptiPlex 7050, Intel Core i7-7700T at 2.9\,GHz, Linux Mint 22.2, based on Ubuntu 24.04). One run of CLUE-S over the 14 steps took on average 11\,s in lulcc, whose inner loop
+is in C, and in the replication 21\,s without the perturbation and 28\,s with it (a new
+draw for every cell and class at every iteration); the ordered allocation took 3\,s and
+0.2\,s. One complete run of the
 paper's experiment, including the regression trees and random forests of lulcc, took
 about 90\,s in R; one run of the replication, about 30\,s.
 
@@ -300,7 +301,7 @@ coefficients, so the whole chain of DisSLUCC reproduces lulcc.
 The agreement is not an artefact of the comparison. The CLUE-S that runs is the
 component of the installed package, called once per step; from the reference only the
 suitability and the demand are read, never a simulated map; lulcc's map changes at every
-step (12\,733 cells at the first, 440 to 590 at the others), and ours matches the same
+step (12\,733 cells at the first, 436 to 594 at the others), and ours matches the same
 step and not the neighbouring ones. The comparison also fails when it should: changing
 one thing at a time makes the final maps differ, by 4\,555 cells for an elasticity of
 0.25 instead of 0.2, 130 for a demand shifted by 100 cells, 45 for a tolerance of 10
@@ -363,8 +364,8 @@ errors of location within a block cancel.
 The criteria detect a wrong model but not every wrong detail. With an elasticity of 0.25, ten runs of the replication (ten rather than 30, to keep
 the audit short; fewer runs make the test more tolerant) fail seven of the eight
 figure-of-merit metrics of CLUE-S; without any perturbation they fail none. Most of the spread between runs comes
-from the training sample, and the perturbation changes only a few cells (19 in the
-final map of one run), so the ensemble level confirms the distribution of the results,
+from the training sample, and the perturbation, of at most $\pm 0.0002$ against an elasticity of 0.2, changes the
+class of few cells, so the ensemble level confirms the distribution of the results,
 not the implementation of the perturbation.
 
 \begin{table}[h]

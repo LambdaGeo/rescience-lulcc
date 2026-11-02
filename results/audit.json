@@ -15,7 +15,8 @@
     "control detected: scale factor 1e-6 -> 2e-6": true,
     "control detected: max difference 50 -> 10": true,
     "control detected: probabilities + N(0, 1e-4)": true,
-    "control detected: demand +100 built, -100 forest": true
+    "control detected: demand +100 built, -100 forest": true,
+    "ensemble power: elasticity 0.25 fails the criteria": true
   },
   "published_execute_calls": 14,
   "lulcc_cells_changed_per_step": [
@@ -57,5 +58,15 @@
     "max difference 50 -> 10": 45,
     "probabilities + N(0, 1e-4)": 14,
     "demand +100 built, -100 forest": 130
+  },
+  "ensemble_power": {
+    "elasticity 0.25": {
+      "clues_fom_metrics_failing": 7,
+      "of": 8
+    },
+    "no perturbation": {
+      "clues_fom_metrics_failing": 0,
+      "of": 8
+    }
   }
 }
