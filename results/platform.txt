@@ -1,0 +1,13 @@
+Platform: linux (Linux-7.0.0-14-generic-x86_64-with-glibc2.39)
+Operating system: Linux Mint 22.2
+Machine and architecture: x86_64 64bit ELF
+CPU: Intel(R) Core(TM) i7-7700T CPU @ 2.90GHz
+Python: 3.12.3 (main, Nov  6 2025, 13:44:16) [GCC 13.3.0]
+dissmodel: 0.6.6
+disslucc: 0.5.0
+numpy: 2.5.4
+scipy: 1.18.1
+pandas: 3.1.0
+statsmodels: 0.15.0
+rasterio: 1.5.2
+matplotlib: 3.11.2
