@@ -87,7 +87,9 @@ they are compared, as read from the plots, with the means of our runs of lulcc
 
 Given the same inputs, the CLUE-S allocation of DisSLUCC reproduces every simulated map
 of lulcc cell by cell, and so do our ports of the ordered allocation and of the
-validation tables (to $10^{-16}$). With
+validation tables (to $10^{-16}$). Five negative controls, each changing one
+parameter or input (elasticity, demand, tolerance, noise on the suitability, scale
+factor), make the maps differ by 6 to 4\,555 cells, so the comparison can fail. With
 independent random numbers, 30 runs of each implementation agree in distribution on all
 20 metrics compared, under criteria recorded before the runs. Running the original
 demonstration script required one repair, unrelated to the model
