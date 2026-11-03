@@ -28,17 +28,35 @@ for Brazil \supercite{Bezerra:2022}. The original article itself lists LuccME am
 the implementations of CLUE-S. Allocation procedures are known to leave room for
 different readings, with consequences for the simulated maps \supercite{Mazy:2023};
 for CLUE-S, the comparison therefore tests two independent readings of the same
-description, with lulcc's own demonstration as the reference.
+description, with lulcc's own demonstration as the reference. The replication is
+computational: agreement with lulcc says that the published model was implemented and run
+as described, not that it represents land use change at Plum Island well.
+
+\begin{figure}[!t]
+\includegraphics[width=\linewidth]{figures/fig_method.pdf}
+\caption{The replication and its comparison with lulcc. Left: the reference, lulcc's
+functions in the demonstration script. Right: the replication and the origin of each
+part. Centre: the four stages of the original model and, in green, the result of the
+deterministic comparison at each stage (Table~\ref{tab:deterministic}). The dashed arrow,
+the cells drawn by R for the training sample of the regression, is the only input that the
+replication's own chain takes from the reference; the demand it computes itself. Bottom:
+the two levels of comparison (Section~\ref{sec:comparison}).}
+\label{fig:method}
+\end{figure}
 
 \section{Replication summary}
 
 Figure~\ref{fig:method} summarises the replication. On the left is the reference: lulcc
 1.0.4 running the article's own demonstration script, in a Docker image. On the right is
-the replication, which runs on DisSModel \supercite{DisSModelJOSS:2026,DisSModel:2026}, a Python framework
-for spatially explicit dynamic models, and its land use package DisSLUCC
+the replication, which runs on DisSModel \supercite{DisSModelJOSS:2026,DisSModel:2026}, a
+Python framework for spatially explicit dynamic models, and its land use package DisSLUCC
 \supercite{DisSLUCC:2026}. In the centre are the four stages of the original model
-(Section~\ref{sec:model}), each implemented separately on both sides. The code of the
-replication is original, and its parts have three origins, shown in the right-hand boxes:
+(Section~\ref{sec:model}), each implemented separately on both sides.
+
+\newpage
+
+The code of the replication is original, and its parts have three origins, shown in the
+right-hand boxes of Fig.~\ref{fig:method}:
 \begin{itemize}
   \item \emph{CLUE-S allocation}: the component of DisSLUCC 0.5.0, used unchanged at
     the deterministic level. It was ported, before and independently of this work, from
@@ -59,17 +77,7 @@ replication is original, and its parts have three origins, shown in the right-ha
     independent reading.
 \end{itemize}
 
-\begin{figure}[t]
-\includegraphics[width=\linewidth]{figures/fig_method.pdf}
-\caption{The replication and its comparison with lulcc. Left: the reference, lulcc's
-functions in the demonstration script. Right: the replication and the origin of each
-part. Centre: the four stages of the original model and, in green, the result of the
-deterministic comparison at each stage (Table~\ref{tab:deterministic}). The dashed arrow,
-the cells drawn by R for the training sample of the regression, is the only input that the
-replication's own chain takes from the reference; the demand it computes itself. Bottom:
-the two levels of comparison (Section~\ref{sec:comparison}).}
-\label{fig:method}
-\end{figure}
+
 
 The comparison has two levels, at the bottom of Fig.~\ref{fig:method}. At the
 \emph{deterministic} level the randomness is removed from both sides, and the stages can be
@@ -175,8 +183,7 @@ stopping condition based on the mean signed difference between demand and alloca
 because the rounded demand sums to the number of cells, that mean is zero, and only the
 largest difference stops the iteration.
 
-\paragraph{Iterations not reported.} The CLUE-S of lulcc does not report the number of iterations of
-CLUE-S at each step, so only the map produced at each step can be compared, not the path
+\paragraph{Iterations not reported.} The CLUE-S of lulcc does not report its number of iterations at each step, so only the map produced at each step can be compared, not the path
 of the iteration. Against LuccME the iteration counts are compared, in the DisSLUCC benchmark
 \supercite{DisSLUCCbenchmark:2026}, and agree.
 
@@ -275,7 +282,12 @@ each of the eight resolutions. A metric passes if the means differ by at most th
 (or $10^{-6}$, a floor for metrics with no spread, which no metric reached) and a
 two-sample Kolmogorov--Smirnov test gives $p \geq 0.01$. With 20 tests at that level,
 the chance that at least one fails by chance alone is about 18\%; no correction was
-applied, and a failure would have been reported and discussed, not removed. The regression trees and random forests of the paper's Fig.~5 are
+applied, and a failure would have been reported and discussed, not removed. The
+criteria are an operational rule of agreement fixed in advance, not a test of
+equivalence: a KS test that does not reject does not show that two distributions are
+equal, and a formal equivalence test would need a margin set before the runs, which we
+did not set. What the rule can detect was measured instead: an elasticity of 0.25 fails
+it (Section~\ref{sec:ens}). The regression trees and random forests of the paper's Fig.~5 are
 outside the criteria: we did not reimplement R's rpart and randomForest, and other
 implementations would differ by construction.
 
@@ -419,27 +431,7 @@ acceptance criteria; see Section~\ref{sec:comparison}.}
 \subsection{The published values}
 \label{sec:published}
 
-The paper prints ten AUCs: those of the three model types for each class (its Fig.~5)
-and that of the glm for the gain of built (its Fig.~6). Table~\ref{tab:published} places
-them in the spread of our 30 runs of lulcc; the regression trees and random forests are
-lulcc's own, since the replication does not include them. Nine of the ten values fall
-inside that spread; the AUC of the glm for forest (0.6423) is slightly below the lowest of
-the 30 runs (0.6425). The paper used lulcc 1.0 with the R of 2015, our reference lulcc
-1.0.4 on current R, and we did not investigate the difference further. It is not
-unexpected: a value from the same distribution falls outside the range of 30 runs with
-probability 2/31, about 6\%, and at least one of ten does with probability about 49\%.
-
-The paper's Figs.~7 and 8 give no values, but read from the plots they agree with the
-means of our 30 runs of lulcc (Figs.~\ref{fig:fom} and~\ref{fig:agreement}). The figure of
-merit rises from about 0.12 (CLUE-S) and 0.11 (ordered) at the finest resolution to about
-0.76 and 0.68 at the coarsest, against means of 0.12, 0.11, 0.77 and 0.68; and in both the
-ordered allocation scores higher than CLUE-S at factors 8 to 64 and lower at 128
-and 256. The
-agreement budget of CLUE-S at the finest resolution adds up to about 0.077 of the study
-area in the paper and 0.076 in our runs, with misses, hits and false alarms of about
-0.025, 0.009 and 0.037 against 0.026, 0.009 and 0.036.
-
-\begin{table}[h]
+\begin{table}[!t]
 \footnotesize
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{llcccc}
@@ -463,6 +455,29 @@ lulcc 1.0) against 30 runs of lulcc 1.0.4. rpart: regression tree; rf: random fo
 (in regression mode, Section~\ref{sec:analysis}).}
 \label{tab:published}
 \end{table}
+
+
+The paper prints ten AUCs: those of the three model types for each class (its Fig.~5)
+and that of the glm for the gain of built (its Fig.~6). Table~\ref{tab:published} places
+them in the spread of our 30 runs of lulcc; the regression trees and random forests are
+lulcc's own, since the replication does not include them. Nine of the ten values fall
+inside that spread; the AUC of the glm for forest (0.6423) is slightly below the lowest of
+the 30 runs (0.6425). The paper used lulcc 1.0 with the R of 2015, our reference lulcc
+1.0.4 on current R, and we did not investigate the difference further. It is not
+unexpected: a value from the same distribution falls outside the range of 30 runs with
+probability 2/31, about 6\%, and at least one of ten does with probability about 49\%.
+
+The paper's Figs.~7 and 8 give no values, but read from the plots they agree with the
+means of our 30 runs of lulcc (Figs.~\ref{fig:fom} and~\ref{fig:agreement}). The figure of
+merit rises from about 0.12 (CLUE-S) and 0.11 (ordered) at the finest resolution to about
+0.76 and 0.68 at the coarsest, against means of 0.12, 0.11, 0.77 and 0.68; and in both the
+ordered allocation scores higher than CLUE-S at factors 8 to 64 and lower at 128
+and 256. The
+agreement budget of CLUE-S at the finest resolution adds up to about 0.077 of the study
+area in the paper and 0.076 in our runs, with misses, hits and false alarms of about
+0.025, 0.009 and 0.037 against 0.026, 0.009 and 0.036.
+
+
 
 \section{Obstacles}
 \label{sec:obstacles}
@@ -496,7 +511,9 @@ metric compared, and our runs of lulcc agree with what the paper published: nine
 within lulcc's own spread, and its curves, read from the plots, match the means of our
 runs.
 The regression trees and random forests of the paper's Fig.~5 were checked against lulcc
-itself, not replicated. The main obstacle was
+itself, not replicated. The agreement holds for this data set, these parameters and this
+application; it does not establish that the two implementations are equivalent in
+general. The main obstacle was
 not in the model but in the environment around it.
 
 \section*{Reproducing this replication}
@@ -509,7 +526,7 @@ With the reference downloaded, \texttt{make env}, then \texttt{make check} (abou
 minute), \texttt{make ensemble} (about 15 minutes) and \texttt{make compare} reproduce
 Tables~\ref{tab:deterministic} and \ref{tab:ensemble} and Figures~\ref{fig:fom}
 and~\ref{fig:agreement};
-\texttt{make maps} draws Figure~\ref{fig:maps}, and \texttt{make audit} (about three
+\texttt{make maps} draws Figure~\ref{fig:maps}; \texttt{make audit} (about three
 minutes) runs the checks of Section~\ref{sec:det}, and \texttt{make audit-power} (about 20
 minutes) adds the ensemble control of Section~\ref{sec:ens}. Each takes the reference's directory
 as \texttt{GOLDENS=}; \texttt{make platform} records the platform and \texttt{make
@@ -557,7 +574,9 @@ obtained for this work.
 open-source packages whose CLUE-S allocation is evaluated here. To limit the effect of
 this, the acceptance criteria were recorded before the ensembles were run, the reference
 was produced with lulcc's own code in a separate archive, and DisSLUCC was used
-unchanged. The authors declare no other competing interests.
+unchanged. The comparison does not rest on trust in the authors: anyone can rerun it
+from the archived reference and the tests in the code repository. The authors declare no
+other competing interests.
 
 
 
